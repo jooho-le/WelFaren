@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <!-- Placeholder simple SVG layout. Replace with a real province map later. -->
+  <style>
+    .r { fill: #e6edf5; stroke: #cbd5e1; stroke-width: 2; }
+    .r:hover { fill: #cfe4ff; }
+    .selected { fill: #93c5fd !important; }
+    text { font-family: Arial, sans-serif; font-size: 22px; fill: #334155; pointer-events: none; }
+  </style>
+  <rect id="서울" class="r" x="320" y="120" width="100" height="80" rx="12"/>
+  <text x="370" y="165" text-anchor="middle">서울</text>
+
+  <rect id="인천" class="r" x="210" y="160" width="100" height="80" rx="12"/>
+  <text x="260" y="205" text-anchor="middle">인천</text>
+
+  <rect id="경기" class="r" x="320" y="220" width="170" height="100" rx="12"/>
+  <text x="405" y="275" text-anchor="middle">경기</text>
+
+  <rect id="강원" class="r" x="520" y="200" width="140" height="130" rx="12"/>
+  <text x="590" y="260" text-anchor="middle">강원</text>
+
+  <rect id="세종" class="r" x="360" y="380" width="80" height="60" rx="12"/>
+  <text x="400" y="418" text-anchor="middle">세종</text>
+
+  <rect id="충남" class="r" x="240" y="420" width="140" height="100" rx="12"/>
+  <text x="310" y="480" text-anchor="middle">충남</text>
+
+  <rect id="충북" class="r" x="420" y="420" width="140" height="100" rx="12"/>
+  <text x="490" y="480" text-anchor="middle">충북</text>
+
+  <rect id="전북" class="r" x="300" y="560" width="160" height="100" rx="12"/>
+  <text x="380" y="620" text-anchor="middle">전북</text>
+
+  <rect id="광주" class="r" x="260" y="690" width="100" height="80" rx="12"/>
+  <text x="310" y="735" text-anchor="middle">광주</text>
+
+  <rect id="전남" class="r" x="220" y="780" width="220" height="100" rx="12"/>
+  <text x="330" y="840" text-anchor="middle">전남</text>
+
+  <rect id="대구" class="r" x="560" y="600" width="100" height="80" rx="12"/>
+  <text x="610" y="645" text-anchor="middle">대구</text>
+
+  <rect id="경북" class="r" x="520" y="520" width="180" height="100" rx="12"/>
+  <text x="610" y="580" text-anchor="middle">경북</text>
+
+  <rect id="울산" class="r" x="660" y="700" width="100" height="80" rx="12"/>
+  <text x="710" y="745" text-anchor="middle">울산</text>
+
+  <rect id="부산" class="r" x="640" y="770" width="120" height="90" rx="12"/>
+  <text x="700" y="820" text-anchor="middle">부산</text>
+
+  <rect id="경남" class="r" x="480" y="720" width="160" height="120" rx="12"/>
+  <text x="560" y="785" text-anchor="middle">경남</text>
+
+  <rect id="제주" class="r" x="320" y="930" width="120" height="50" rx="12"/>
+  <text x="380" y="965" text-anchor="middle">제주</text>
+</svg>
+

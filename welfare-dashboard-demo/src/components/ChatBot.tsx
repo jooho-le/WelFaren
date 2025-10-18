@@ -140,15 +140,8 @@ export default function ChatBot({
       <div className="chat-window">
         <div className="chat-header">
           <div className="logo" style={{ width: 20, height: 20 }} />
-          <div style={{ fontWeight: 700, fontSize: 13 }}>도움봇</div>
+          <div style={{ fontWeight: 700, fontSize: 13 }}>AI 상담</div>
           <div className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>대화로 입력/추천 진행</div>
-          {fullscreen && (
-            <button
-              className="btn secondary"
-              style={{ marginLeft: 8, padding: '6px 10px' }}
-              onClick={onExit}
-            >처음 화면</button>
-          )}
         </div>
         <div ref={bodyRef} className="chat-body">
           {msgs.map((m, i) => (
