@@ -173,6 +173,7 @@ export default function App() {
         </div>
         <nav className="top-nav">
           <button className="nav-btn slate" onClick={() => navigate('/savings')}>현재적금금액</button>
+          <button className="nav-btn indigo" onClick={() => navigate('/transfer')}>간편송금</button>
           <button className="nav-btn green" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
           <button className="nav-btn blue" onClick={() => navigate('/mydata')}>마이데이터</button>
           <button className="nav-btn amber" onClick={() => navigate('/profile')}>나의정보선택</button>
