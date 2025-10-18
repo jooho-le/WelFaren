@@ -339,6 +339,18 @@ label { color: #000; }
   box-shadow: 0 4px 10px rgba(2,8,23,0.06);
 }
 
+/* Always-visible overlay hotspots (works even if SVG has no ids/text) */
+.map-overlay { position: absolute; inset: 0; pointer-events: none; }
+.hotspot {
+  position: absolute; transform: translate(-50%, -50%);
+  padding: 6px 10px; border-radius: 9999px; pointer-events: auto;
+  background: #111827; color: #fff; border: 1px solid #0f172a;
+  box-shadow: 0 8px 20px rgba(2,8,23,0.2);
+  font-weight: 800; font-size: 12px;
+}
+.hotspot:hover { background: #0b1220; }
+.hotspot.active { outline: 2px solid rgba(59,130,246,0.45); }
+
 /* Map shapes: remove strokes and add subtle depth */
 .map-root svg path, .map-root svg polygon, .map-root svg rect {
   stroke: none !important;

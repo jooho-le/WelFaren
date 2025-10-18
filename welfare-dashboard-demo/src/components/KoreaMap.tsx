@@ -190,6 +190,39 @@ export default function KoreaMap({ onSelect, selected }: { onSelect: (name: stri
           <span key={i} className="map-label" style={{ left: l.x, top: l.y }}>{l.name}</span>
         ))}
       </div>
+      {/* Manual overlay hotspots to guarantee all regions are visible/clickable even if SVG lacks ids/text */}
+      <div className="map-overlay">
+        {HOTSPOTS.map(h => (
+          <button
+            key={h.name}
+            className={`hotspot ${selected === h.name ? 'active' : ''}`}
+            style={{ left: `${h.x}%`, top: `${h.y}%` }}
+            onClick={() => onSelect(h.name)}
+            aria-label={`${h.name} 선택`}
+          >{h.name}</button>
+        ))}
+      </div>
     </div>
   )
 }
+
+// Approximate anchor points for visible, clickable region buttons (percentage positions)
+const HOTSPOTS: Array<{ name: string; x: number; y: number }> = [
+  { name: '서울', x: 31, y: 29 },
+  { name: '인천', x: 26, y: 32 },
+  { name: '경기', x: 36, y: 34 },
+  { name: '강원', x: 61, y: 24 },
+  { name: '세종', x: 41, y: 49 },
+  { name: '대전', x: 42, y: 55 },
+  { name: '충남', x: 31, y: 52 },
+  { name: '충북', x: 50, y: 50 },
+  { name: '전북', x: 38, y: 65 },
+  { name: '광주', x: 35, y: 77 },
+  { name: '전남', x: 34, y: 84 },
+  { name: '경북', x: 63, y: 53 },
+  { name: '대구', x: 61, y: 61 },
+  { name: '울산', x: 73, y: 66 },
+  { name: '부산', x: 73, y: 73 },
+  { name: '경남', x: 61, y: 70 },
+  { name: '제주', x: 39, y: 96 },
+]
