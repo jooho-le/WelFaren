@@ -16,6 +16,7 @@ import PrefSelect from './pages/select/PrefSelect'
 import WelfareHub from './pages/WelfareHub'
 import FinanceHub from './pages/FinanceHub'
 import WelfareCategory from './pages/WelfareCategory'
+import SavingsOverview from './pages/SavingsOverview'
 
 type Step = 0 | 1 | 2
 
@@ -79,6 +80,7 @@ export default function App() {
       />
     )
     if (route === '/transfer') return <TransferPage navigate={navigate} />
+    if (route === '/savings') return <SavingsOverview navigate={navigate} data={data} />
     if (route === '/mydata') return <MyDataPage navigate={navigate} />
     if (route === '/profile') return <ProfileSelectPage navigate={navigate} />
     if (route === '/select/region') return <RegionSelect navigate={navigate} />
@@ -167,19 +169,19 @@ export default function App() {
             onClick={() => navigate('/')}
             style={{ cursor: 'pointer' }}
           />
-          <div>
-            <div className="title">Welfare Navigator · DSA Engine</div>
-            <div className="subtitle">해시 라우팅으로 플로우를 구성했습니다</div>
-          </div>
+          <div className="title">웰페린</div>
         </div>
-        <div className="row" />
+        <nav className="top-nav">
+          <button className="nav-btn slate" onClick={() => navigate('/savings')}>현재적금금액</button>
+          <button className="nav-btn green" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
+          <button className="nav-btn blue" onClick={() => navigate('/mydata')}>마이데이터</button>
+          <button className="nav-btn amber" onClick={() => navigate('/profile')}>나의정보선택</button>
+        </nav>
       </header>
 
       {renderRoute()}
 
-      <div className="footer-note">
-        본 데모는 단순화된 로직과 임의 기준을 사용합니다. 실제 자격 확인은 관련 기관 고지와 상담을 통해 진행되어야 합니다.
-      </div>
+
 
       {/* 상시 플로팅 홈 버튼 */}
       <HomeButton navigate={navigate} />

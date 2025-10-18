@@ -30,10 +30,6 @@ export default function ConsultPage({
         fullscreen
         onExit={() => navigate('/')}
       />
-      <div className="row" style={{ justifyContent: 'center' }}>
-        <button className="btn secondary" onClick={() => navigate('/transfer')}>간편송금으로 이동</button>
-      </div>
     </div>
   )
 }
-
