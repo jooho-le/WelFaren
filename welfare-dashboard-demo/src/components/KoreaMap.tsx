@@ -212,7 +212,6 @@ const HOTSPOTS: Array<{ name: string; x: number; y: number }> = [
   { name: '인천', x: 26, y: 32 },
   { name: '경기', x: 36, y: 34 },
   { name: '강원', x: 61, y: 24 },
-  { name: '세종', x: 41, y: 49 },
   { name: '대전', x: 42, y: 55 },
   { name: '충남', x: 31, y: 52 },
   { name: '충북', x: 50, y: 50 },

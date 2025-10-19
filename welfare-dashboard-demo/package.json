@@ -6,16 +6,30 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:init": "cap init welperin com.welperin.app -w dist --skip-dependency-install",
+    "cap:add:ios": "cap add ios",
+    "cap:add:android": "cap add android",
+    "cap:copy": "cap copy",
+    "cap:sync": "cap sync",
+    "cap:open:ios": "cap open ios",
+    "cap:open:android": "cap open android",
+    "mobile:build": "npm run build && cap copy",
+    "mobile:android": "npm run mobile:build && cap run android",
+    "mobile:ios": "npm run mobile:build && cap run ios"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.0",
+    "@capacitor/cli": "^7.4.3",
     "@types/react": "^18.2.30",
     "@types/react-dom": "^18.2.14",
+    "@vitejs/plugin-react": "^4.2.0",
     "typescript": "^5.4.0",
     "vite": "^5.0.0"
   }
