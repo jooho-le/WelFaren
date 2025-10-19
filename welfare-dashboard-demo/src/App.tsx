@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Capacitor } from '@capacitor/core'
 import AssetInput, { AssetFormData } from './components/AssetInput'
 import WelfareResults from './components/WelfareResults'
 import DSAEngine from './components/DSAEngine'
@@ -68,7 +69,7 @@ export default function App() {
 
   // Router: map routes to views
   const renderRoute = () => {
-    if (route === '/') return <HomeLanding navigate={navigate} />
+    if (route === '/') return <HomeLanding navigate={navigate} data={data} />
     if (route === '/search') return <SearchPage navigate={navigate} />
     if (route === '/consult') return (
       <ConsultPage
@@ -159,8 +160,8 @@ export default function App() {
 
   return (
     <div className="container">
-      <header className="header">
-        <div className="brand">
+      <header className={`header ${Capacitor.isNativePlatform?.() ? 'mobile-header' : ''}`}>
+        <div className="brand" style={Capacitor.isNativePlatform?.() ? { justifyContent: 'center', width: '100%' } as any : undefined}>
           <div
             className="logo"
             role="button"
@@ -169,14 +170,17 @@ export default function App() {
             onClick={() => navigate('/')}
             style={{ cursor: 'pointer' }}
           />
-          <div className="title">웰페린</div>
+          <div className="title" style={{ whiteSpace: 'nowrap' }}>{Capacitor.isNativePlatform?.() ? 'WELFAREN' : '웰페린'}</div>
         </div>
-        <nav className="top-nav">
-          <button className="nav-btn slate" onClick={() => navigate('/savings')}>현재적금금액</button>
-          <button className="nav-btn green" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
-          <button className="nav-btn blue" onClick={() => navigate('/mydata')}>마이데이터</button>
-          <button className="nav-btn amber" onClick={() => navigate('/profile')}>나의정보선택</button>
-        </nav>
+        {!Capacitor.isNativePlatform?.() && (
+          <nav className="top-nav">
+            <button className="nav-btn slate" onClick={() => navigate('/savings')}>현재적금금액</button>
+            <button className="nav-btn indigo" onClick={() => navigate('/transfer')}>간편송금</button>
+            <button className="nav-btn green" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
+            <button className="nav-btn blue" onClick={() => navigate('/mydata')}>마이데이터</button>
+            <button className="nav-btn amber" onClick={() => navigate('/profile')}>나의정보선택</button>
+          </nav>
+        )}
       </header>
 
       {renderRoute()}
