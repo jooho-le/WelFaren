@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
+import logoImg from '@/assets/logo.png'
 import AssetInput, { AssetFormData } from './components/AssetInput'
 import WelfareResults from './components/WelfareResults'
 import DSAEngine from './components/DSAEngine'
@@ -179,7 +180,13 @@ export default function App() {
             aria-label="홈으로"
             title="홈으로"
             onClick={() => navigate('/')}
-            style={{ cursor: 'pointer' }}
+            style={{
+              cursor: 'pointer',
+              backgroundImage: `url(${logoImg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
           />
           <div className="title" style={{ whiteSpace: 'nowrap' }}>{Capacitor.isNativePlatform?.() ? 'WELFAREN' : '웰페린'}</div>
         </div>
