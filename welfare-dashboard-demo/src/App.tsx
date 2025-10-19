@@ -14,10 +14,13 @@ import RegionSelect from './pages/select/RegionSelect'
 import JobSelect from './pages/select/JobSelect'
 import AgeSelect from './pages/select/AgeSelect'
 import PrefSelect from './pages/select/PrefSelect'
+import MyDataWelfarePage from './pages/MyDataWelfarePage'
 import WelfareHub from './pages/WelfareHub'
 import FinanceHub from './pages/FinanceHub'
 import WelfareCategory from './pages/WelfareCategory'
 import SavingsOverview from './pages/SavingsOverview'
+import MyDataFinancePage from './pages/MyDataFinancePage'
+import MyDataAssetsPage from './pages/MyDataAssetsPage'
 
 type Step = 0 | 1 | 2
 
@@ -46,6 +49,11 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
   const navigate = (p: string) => { if (!p.startsWith('/')) p = '/' + p; location.hash = p }
+
+  const isActive = (targets: string | string[]) => {
+    const list = Array.isArray(targets) ? targets : [targets]
+    return list.some((t) => route === t || route.startsWith(`${t}/`))
+  }
 
   const incomeRecognition = useMemo(() => {
     // Simplified 인정소득: 근로소득 70% + 재산의 소득환산(연 4%/12) + 기타자산 환산
@@ -83,6 +91,9 @@ export default function App() {
     if (route === '/transfer') return <TransferPage navigate={navigate} />
     if (route === '/savings') return <SavingsOverview navigate={navigate} data={data} />
     if (route === '/mydata') return <MyDataPage navigate={navigate} />
+    if (route === '/mydata/finance') return <MyDataFinancePage navigate={navigate} data={data} />
+    if (route === '/mydata/assets') return <MyDataAssetsPage navigate={navigate} data={data} />
+    if (route === '/mydata/welfare') return <MyDataWelfarePage navigate={navigate} />
     if (route === '/profile') return <ProfileSelectPage navigate={navigate} />
     if (route === '/select/region') return <RegionSelect navigate={navigate} />
     if (route === '/select/job') return <JobSelect navigate={navigate} />
@@ -174,11 +185,11 @@ export default function App() {
         </div>
         {!Capacitor.isNativePlatform?.() && (
           <nav className="top-nav">
-            <button className="nav-btn slate" onClick={() => navigate('/savings')}>현재적금금액</button>
-            <button className="nav-btn indigo" onClick={() => navigate('/transfer')}>간편송금</button>
-            <button className="nav-btn green" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
-            <button className="nav-btn blue" onClick={() => navigate('/mydata')}>마이데이터</button>
-            <button className="nav-btn amber" onClick={() => navigate('/profile')}>나의정보선택</button>
+            <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
+            <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
+            <button className={`nav-btn green ${isActive(['/consult', '/wizard']) ? 'active' : ''}`} onClick={() => navigate('/consult')}>AI 챗봇상담</button>
+            <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
+            <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
           </nav>
         )}
       </header>
