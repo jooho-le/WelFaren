@@ -206,8 +206,7 @@ export default function App() {
     </nav>
   )
 
-  const isDetailRoute = route !== '/'
-  const showHeader = !isNative || !isDetailRoute
+  const showHeader = !isNative
 
   return (
     <div className="container" style={isNative ? { paddingBottom: 110 } : undefined}>

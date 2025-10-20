@@ -91,8 +91,8 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
         </div>
 
         <div className="mh-quiz-grid">
-          <button className="mh-quiz-btn" onClick={playQuiz}>3초 금융 상식 퀴즈</button>
-          <button className="mh-quiz-btn" onClick={playLotto}>3초 복권</button>
+          <button className="mh-quiz-btn" onClick={playQuiz}>광고보고 즉석복권</button>
+          <button className="mh-quiz-btn" onClick={playLotto}>광고보고 로또받기</button>
         </div>
 
         <div className="mh-banner">
