@@ -4,7 +4,6 @@ import logoImg from '@/assets/logo.png'
 import AssetInput, { AssetFormData } from './components/AssetInput'
 import WelfareResults from './components/WelfareResults'
 import DSAEngine from './components/DSAEngine'
-import HomeButton from './components/HomeButton'
 import HomeLanding from './pages/HomeLanding'
 import SearchPage from './pages/SearchPage'
 import ConsultPage from './pages/ConsultPage'
@@ -44,6 +43,7 @@ export default function App() {
   const [route, setRoute] = useState<string>(() => (location.hash.slice(1) || '/'))
   const [step, setStep] = useState<Step>(0)
   const [data, setData] = useState<AssetFormData>(defaultData)
+  const isNative = Capacitor.isNativePlatform?.() ?? false
   useEffect(() => {
     const onHash = () => setRoute(location.hash.slice(1) || '/')
     window.addEventListener('hashchange', onHash)
@@ -79,7 +79,16 @@ export default function App() {
   // Router: map routes to views
   const renderRoute = () => {
     if (route === '/') return <HomeLanding navigate={navigate} data={data} />
-    if (route === '/search') return <SearchPage navigate={navigate} />
+    if (route === '/search') {
+      const shortcuts = [
+        { label: '마이데이터', icon: '👤', description: '내 금융상품·자산 보기', to: '/mydata' },
+        { label: 'AI 상담', icon: '🤖', description: '복지·금융 질문 바로하기', to: '/consult' },
+        { label: '간편송금', icon: '💸', description: '필요한 곳으로 빠르게 이체', to: '/transfer' },
+        { label: '현재 적금 금액', icon: '💰', description: '적금 현황과 만기금 확인', to: '/savings' },
+        { label: '나의 정보 선택', icon: '🧭', description: '지역·직업 등 프로필 설정', to: '/profile' }
+      ]
+      return <SearchPage navigate={navigate} isNative={isNative} shortcuts={shortcuts} />
+    }
     if (route === '/consult') return (
       <ConsultPage
         data={data} setData={setData}
@@ -170,43 +179,71 @@ export default function App() {
     return <div className="muted">페이지를 찾을 수 없습니다. <button className="btn link" onClick={() => navigate('/')}>홈으로</button></div>
   }
 
+  const tabItems: Array<{ label: string, icon: string, target: string | string[], to: string }> = [
+    { label: '홈', icon: '🏠', target: '/', to: '/' },
+    { label: '간편송금', icon: '✅', target: '/transfer', to: '/transfer' },
+    { label: '내가족 적금', icon: '⭐', target: '/savings', to: '/savings' },
+    { label: '마이데이터', icon: '👤', target: ['/mydata'], to: '/mydata' },
+    { label: '전체', icon: '≡', target: '/search', to: '/search' }
+  ]
+
+  const renderMobileTabBar = () => (
+    <nav className="mh-tabbar" aria-label="하단 탐색">
+      {tabItems.map(({ label, icon, target, to }) => {
+        const active = target === '/' ? route === '/' : isActive(target)
+        return (
+          <button
+            key={label}
+            type="button"
+            className={`mh-tab-btn ${active ? 'active' : ''}`}
+            onClick={() => navigate(to)}
+          >
+            <span className="mh-tab-icon" aria-hidden>{icon}</span>
+            <span className="mh-tab-label">{label}</span>
+          </button>
+        )
+      })}
+    </nav>
+  )
+
+  const showHeader = !isNative
+
   return (
-    <div className="container">
-      <header className={`header ${Capacitor.isNativePlatform?.() ? 'mobile-header' : ''}`}>
-        <div className="brand" style={Capacitor.isNativePlatform?.() ? { justifyContent: 'center', width: '100%' } as any : undefined}>
-          <div
-            className="logo"
-            role="button"
-            aria-label="홈으로"
-            title="홈으로"
-            onClick={() => navigate('/')}
-            style={{
-              cursor: 'pointer',
-              backgroundImage: `url(${logoImg})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          />
-          <div className="title" style={{ whiteSpace: 'nowrap' }}>{Capacitor.isNativePlatform?.() ? 'WELFAREN' : '웰페린'}</div>
-        </div>
-        {!Capacitor.isNativePlatform?.() && (
-          <nav className="top-nav">
-            <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
-            <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
-            <button className={`nav-btn green ${isActive(['/consult', '/wizard']) ? 'active' : ''}`} onClick={() => navigate('/consult')}>AI 챗봇상담</button>
-            <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
-            <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
-          </nav>
-        )}
-      </header>
+    <div className="container" style={isNative ? { paddingBottom: 110 } : undefined}>
+      {showHeader && (
+        <header className={`header ${isNative ? 'mobile-header' : ''}`}>
+          <div className="brand" style={isNative ? { justifyContent: 'center', width: '100%' } as any : undefined}>
+            <div
+              className="logo"
+              role="button"
+              aria-label="홈으로"
+              title="홈으로"
+              onClick={() => navigate('/')}
+              style={{
+                cursor: 'pointer',
+                backgroundImage: `url(${logoImg})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            />
+            <div className="title" style={{ whiteSpace: 'nowrap' }}>{isNative ? 'WELFAREN' : '웰페린'}</div>
+          </div>
+          {!isNative && (
+            <nav className="top-nav">
+              <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
+              <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
+              <button className={`nav-btn green ${isActive(['/consult', '/wizard']) ? 'active' : ''}`} onClick={() => navigate('/consult')}>AI 챗봇상담</button>
+              <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
+              <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
+            </nav>
+          )}
+        </header>
+      )}
 
       {renderRoute()}
 
-
-
-      {/* 상시 플로팅 홈 버튼 */}
-      <HomeButton navigate={navigate} />
+      {isNative && renderMobileTabBar()}
     </div>
   )
 }
