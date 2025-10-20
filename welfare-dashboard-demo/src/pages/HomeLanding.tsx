@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { Capacitor } from '@capacitor/core'
-import logoImg from '@/assets/logo.png'
 import aibbImg from '@/assets/aibb.png'
+import logoImg from '@/assets/logo.png'
 import type { AssetFormData } from '@/components/AssetInput'
 
 export default function HomeLanding({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
@@ -14,13 +14,13 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
   }, [data])
   const dday = Math.max(0, Math.ceil((maturity.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
   const expected = Math.round(data.savings.principal * (1 + data.savings.annualRate * (Math.max(0, data.savings.monthsRemaining) / 12)))
-  const daysRemaining = Math.max(1, Math.ceil((maturity.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-  const interest = Math.max(0, expected - data.savings.principal)
-  const tax = Math.round(interest * 0.154) // 예시: 15.4%
-  const dailyNeed = Math.round(expected / daysRemaining)
 
   const fmt = (n: number) => n.toLocaleString()
   const fmtDate = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+  const goalTarget = 100_000_000
+  const averageRate = (data.savings.annualRate * 100).toFixed(1)
+  const maturityLabel = fmtDate(maturity)
+  const goalDateLabel = fmtDate(maturity)
   const consentThen = (next: () => void) => {
     const ok = localStorage.getItem('consent-ok') === '1' || confirm('개인정보 이용에 동의하시겠습니까?')
     if (ok) { localStorage.setItem('consent-ok', '1'); next() }
@@ -39,89 +39,70 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
   if (isNative) {
     return (
       <div className="mobile-home">
-        {/* 상단 브랜드/알림 */}
-        <div className="mh-header">
-          <img src={logoImg} className="brand-logo" alt="WELFAREN" />
+        <div className="mh-topbar">
+          <span className="mh-brand">WELFAREN</span>
           <button className="icon-btn" onClick={() => navigate('/profile')} aria-label="알림">🔔</button>
         </div>
 
-        {/* 검색/AI (삐삐) */}
-        <div className="mh-search">
-          <img src={aibbImg} className="ai-avatar-img" alt="삐삐" />
-          <button className="search-pill" onClick={() => navigate('/consult')}>삐삐한테 물어보기</button>
+        <div className="mh-searchbar">
+          <img src={aibbImg} className="mh-avatar" alt="삐삐" />
+          <button className="mh-search-pill" onClick={() => navigate('/consult')}>
+            <img src={logoImg} alt="" className="mh-search-logo" aria-hidden />
+            <span>
+              삐삐<span className="mh-search-accent">한테 물어보기</span>
+            </span>
+          </button>
           <button className="icon-btn" aria-label="검색">🔍</button>
         </div>
 
-        {/* 핵심 지표 */}
-        <div className="mh-metrics">
-          <div className="mh-card">
-            <div className="mh-dday">D-{dday}</div>
-            <div className="mh-label">현재 적금 금액</div>
-            <div className="mh-value">{fmt(data.savings.principal)}원</div>
-          </div>
-          <div className="mh-card">
-            <div className="mh-label">미래 적금 금액(예상)</div>
-            <div className="mh-value">{fmt(expected)}원</div>
-            <div className="mh-sub">예상 만기일 {fmtDate(maturity)}</div>
-            <div className="row" style={{ marginTop: 6 }}>
-              <button className="btn secondary" onClick={() => navigate('/transfer')}>간편 송금하기</button>
-            </div>
+        <div className="mh-dstatus">
+          <div className="mh-dday">D-{dday}</div>
+          <div className="mh-dmeta">
+            <span className="mh-dmeta-date">{maturityLabel}</span>
+            <span className="mh-dmeta-label">만기일</span>
           </div>
         </div>
 
-        {/* 좌/중앙/우 스탯 */}
-        <div className="stat-grid">
-          <div className="stat-mini">
-            <div className="sm-title">현재 총 적금</div>
-            <div className="sm-value">{fmt(data.savings.principal)}원</div>
+        <div className="mh-info-cards">
+          <div className="mh-info-card">
+            <div className="mh-info-label">현재 총 적금</div>
+            <div className="mh-info-value">{fmt(data.savings.principal)}원</div>
           </div>
-          <div className="center-stat">
-            <div className="cs-dday">D-{dday}</div>
-            <div className="cs-date">{fmtDate(maturity)}</div>
-          </div>
-          <div className="stat-mini">
-            <div className="sm-title">세전</div>
-            <div className="sm-value">{fmt(expected)}원</div>
-            <div className="sm-title">예상 세금 {fmt(tax)}원</div>
+          <div className="mh-info-card">
+            <div className="mh-info-label">세전</div>
+            <div className="mh-info-value">{fmt(expected)}원</div>
+            <div className="mh-info-sub">평균 이자율 {averageRate}%</div>
           </div>
         </div>
 
-        {/* 목표 */}
-        <div className="goal-row">
-          <div className="goal-label">목표 금액</div>
-          <div className="goal-value">100,000,000</div>
-          <div className="goal-sub">예상 달성일 {fmtDate(maturity)}</div>
-          <div>
-            <button className="h-link" onClick={() => navigate('/consult')}>단축하는 방법 보기</button>
+        <div className="mh-goal">
+          <div className="mh-goal-label">목표 금액</div>
+          <div className="mh-goal-amount">{fmt(goalTarget)}</div>
+          <div className="mh-goal-meta">
+            <span className="mh-goal-tag">예상 달성일</span>
+            <span className="mh-goal-date">{goalDateLabel}</span>
           </div>
         </div>
 
-        {/* 오늘의 */}
-        <div className="action-3">
-          <button className="action-btn" onClick={() => consentThen(() => navigate('/search'))}>오늘의 세금</button>
-          <button className="action-btn" onClick={() => consentThen(() => navigate('/wizard/1'))}>오늘의 복지</button>
-          <button className="action-btn" onClick={() => consentThen(() => navigate('/wizard/2'))}>오늘의 적금</button>
+        <div className="mh-quick-grid">
+          <button className="mh-quick-btn" onClick={() => consentThen(() => navigate('/search'))}>오늘의 세금</button>
+          <button className="mh-quick-btn" onClick={() => consentThen(() => navigate('/wizard/1'))}>오늘의 복지</button>
+          <button className="mh-quick-btn" onClick={() => consentThen(() => navigate('/wizard/2'))}>오늘의 적금</button>
         </div>
 
-        {/* 퀵 CTA */}
-        <div className="quiz-row">
-          <button className="quiz-btn" onClick={playQuiz}>3초 금융 상식 퀴즈</button>
-          <button className="quiz-btn" onClick={playLotto}>3초 복권</button>
+        <div className="mh-quiz-grid">
+          <button className="mh-quiz-btn" onClick={playQuiz}>3초 금융 상식 퀴즈</button>
+          <button className="mh-quiz-btn" onClick={playLotto}>3초 복권</button>
         </div>
 
-        {/* 광고 박스 (추후 대체) */}
-        <div className="ad-card">
-          <div className="ad-thumb" />
-          <div className="ad-copy">아무 의미 없습니다!</div>
-        </div>
-
-        {/* 하단 탭바 */}
-        <div className="subnav fixed">
-          <button className="nav-btn nav-btn-sm black" onClick={() => navigate('/')}>홈</button>
-          <button className="nav-btn nav-btn-sm black" onClick={() => navigate('/transfer')}>간편송금</button>
-          <button className="nav-btn nav-btn-sm black" onClick={() => navigate('/savings')}>내 가족 적금</button>
-          <button className="nav-btn nav-btn-sm black" onClick={() => navigate('/mydata')}>마이데이터</button>
-          <button className="nav-btn nav-btn-sm black" onClick={() => navigate('/search')}>전체</button>
+        <div className="mh-banner">
+          <div className="mh-banner-art" aria-hidden />
+          <div className="mh-banner-copy">
+            <span className="mh-banner-tag">웰퍼 TV</span>
+            <div className="mh-banner-title">청년에 이런 대출 아무 의미 없습니다!</div>
+            <p className="mh-banner-desc">유익한 정책·금융 콘텐츠를 영상으로 빠르게 확인해 보세요.</p>
+            <button className="mh-banner-cta" onClick={() => navigate('/mydata')}>영상 보러가기</button>
+          </div>
         </div>
       </div>
     )
