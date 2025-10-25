@@ -1,3 +1,5 @@
+import { saveProfile } from '@/api/user'
+
 export default function JobSelect({ navigate }: { navigate: (p: string) => void }) {
   const setJob = (j: string) => {
     try {
@@ -5,6 +7,7 @@ export default function JobSelect({ navigate }: { navigate: (p: string) => void 
       cur.job = j
       localStorage.setItem('profileSelections', JSON.stringify(cur))
     } catch {}
+    saveProfile({ job_category: j === '근로자' ? '직장인' : j }).catch(()=>{})
     navigate('/profile')
   }
 

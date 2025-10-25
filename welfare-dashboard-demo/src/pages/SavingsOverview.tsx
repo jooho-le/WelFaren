@@ -12,6 +12,7 @@ const emptyDraft = {
 type Draft = typeof emptyDraft
 
 export default function SavingsOverview({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
+  const authed = !!(typeof localStorage !== 'undefined' && localStorage.getItem('authToken'))
   const baseItems: SavingsInfo[] = useMemo(() => {
     const s = data?.savings
     return s ? [s] : []
@@ -91,6 +92,11 @@ export default function SavingsOverview({ navigate, data }: { navigate: (p: stri
         <div className="section-title">현재 적금 총액</div>
         <div className="amount-big">{summary.principal.toLocaleString()}원</div>
         <div className="muted">만기 예상금액 {summary.maturity.toLocaleString()}원 · 평균 이자율 {(summary.avgRate * 100).toFixed(2)}%</div>
+        {!authed && (
+          <div className="muted" style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
+            회원가입/로그인 후 본인의 자산/복지 정보를 확인할 수 있습니다.
+          </div>
+        )}
         <div className="row savings-total-actions">
           <button className="btn" onClick={() => { resetDraft(); setShowModal(true) }}>적금 추가</button>
         </div>

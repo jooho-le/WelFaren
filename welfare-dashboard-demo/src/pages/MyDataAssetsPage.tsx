@@ -23,6 +23,7 @@ const labelMap: Record<PortfolioSlice['key'], string> = {
 const formatCurrency = (value: number) => `${value.toLocaleString()}원`
 
 export default function MyDataAssetsPage({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
+  const authed = !!(typeof localStorage !== 'undefined' && localStorage.getItem('authToken'))
   const slices: PortfolioSlice[] = useMemo(() => ([
     { key: 'realEstate', label: labelMap.realEstate, value: Math.max(0, data.realEstate || 0), color: colorMap.realEstate },
     { key: 'deposits', label: labelMap.deposits, value: Math.max(0, data.deposits || 0), color: colorMap.deposits },
@@ -71,6 +72,11 @@ export default function MyDataAssetsPage({ navigate, data }: { navigate: (p: str
   return (
     <div className="panel">
       <div className="section-title" style={{ fontSize: 32, textAlign: 'center' }}>자산 포트폴리오 현황</div>
+      {!authed && (
+        <div className="muted" style={{ textAlign: 'center', marginBottom: 10, fontSize: 12, opacity: 0.8 }}>
+          해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.
+        </div>
+      )}
       <div className="muted" style={{ textAlign: 'center', marginBottom: 18 }}>
         마이데이터로 수집된 자산 구성을 시각화해 전체 포트폴리오 비중과 유동성 상태를 확인할 수 있습니다.
       </div>

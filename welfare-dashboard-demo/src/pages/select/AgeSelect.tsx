@@ -1,3 +1,5 @@
+import { saveProfile } from '@/api/user'
+
 export default function AgeSelect({ navigate }: { navigate: (p: string) => void }) {
   const setAge = (a: string) => {
     try {
@@ -5,6 +7,8 @@ export default function AgeSelect({ navigate }: { navigate: (p: string) => void 
       cur.age = a
       localStorage.setItem('profileSelections', JSON.stringify(cur))
     } catch {}
+    const ageVal = a === '청년' ? 29 : a === '중장년' ? 45 : a === '시니어' ? 68 : undefined
+    if (ageVal) saveProfile({ age: ageVal }).catch(()=>{})
     navigate('/profile')
   }
 

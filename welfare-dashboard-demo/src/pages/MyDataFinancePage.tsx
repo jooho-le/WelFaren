@@ -26,6 +26,7 @@ const emptyLoanDraft: LoanDraft = {
 }
 
 export default function MyDataFinancePage({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
+  const authed = !!(typeof localStorage !== 'undefined' && localStorage.getItem('authToken'))
   const [loans, setLoans] = useState<LoanInfo[]>([])
   const [showLoanModal, setShowLoanModal] = useState(false)
   const [loanDraft, setLoanDraft] = useState<LoanDraft>(emptyLoanDraft)
@@ -99,6 +100,11 @@ export default function MyDataFinancePage({ navigate, data }: { navigate: (p: st
   return (
     <div className="panel">
       <div className="section-title" style={{ fontSize: 32, textAlign: 'center' }}>보유 금융상품 요약</div>
+      {!authed && (
+        <div className="muted" style={{ textAlign: 'center', marginBottom: 10, fontSize: 12, opacity: 0.8 }}>
+          해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.
+        </div>
+      )}
       <div className="spacer" />
 
       <div className="grid cols-3" style={{ marginBottom: 16 }}>

@@ -21,6 +21,7 @@ import WelfareCategory from './pages/WelfareCategory'
 import SavingsOverview from './pages/SavingsOverview'
 import MyDataFinancePage from './pages/MyDataFinancePage'
 import MyDataAssetsPage from './pages/MyDataAssetsPage'
+import AuthPage from './pages/AuthPage'
 
 type Step = 0 | 1 | 2
 
@@ -42,12 +43,42 @@ const defaultData: AssetFormData = {
 export default function App() {
   const [route, setRoute] = useState<string>(() => (location.hash.slice(1) || '/'))
   const [step, setStep] = useState<Step>(0)
-  const [data, setData] = useState<AssetFormData>(defaultData)
+  const [authed, setAuthed] = useState<boolean>(() => !!(typeof localStorage !== 'undefined' && localStorage.getItem('authToken')))
+  const emptyData: AssetFormData = {
+    monthlyIncome: 0,
+    householdSize: 1,
+    realEstate: 0,
+    deposits: 0,
+    otherAssets: 0,
+    savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 }
+  }
+  const [data, setData] = useState<AssetFormData>(() => (localStorage.getItem('authToken') ? emptyData : defaultData))
   const isNative = Capacitor.isNativePlatform?.() ?? false
   useEffect(() => {
     const onHash = () => setRoute(location.hash.slice(1) || '/')
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  useEffect(() => {
+    const updateAuth = () => {
+      const has = !!localStorage.getItem('authToken')
+      setAuthed(has)
+      if (has) setData({
+        monthlyIncome: 0,
+        householdSize: 1,
+        realEstate: 0,
+        deposits: 0,
+        otherAssets: 0,
+        savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 }
+      })
+    }
+    const onStorage = (e: StorageEvent) => { if (e.key === 'authToken') updateAuth() }
+    window.addEventListener('storage', onStorage)
+    window.addEventListener('authed', updateAuth as any)
+    return () => {
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('authed', updateAuth as any)
+    }
   }, [])
   const navigate = (p: string) => { if (!p.startsWith('/')) p = '/' + p; location.hash = p }
 
@@ -78,7 +109,35 @@ export default function App() {
 
   // Router: map routes to views
   const renderRoute = () => {
-    if (route === '/') return <HomeLanding navigate={navigate} data={data} />
+    if (route === '/') {
+      if (!authed) {
+        return (
+          <div className="panel" style={{ textAlign: 'center' }}>
+            <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>웰페린</div>
+            <div className="muted">AI 챗봇상담은 로그인 없이 이용 가능합니다.</div>
+            <div className="muted" style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.</div>
+            <div className="row" style={{ justifyContent: 'center', marginTop: 16, gap: 8 }}>
+              <button className="btn" onClick={() => navigate('/consult')}>AI 챗봇상담 시작</button>
+              <button className="btn secondary" onClick={() => navigate('/auth')}>로그인/회원가입</button>
+            </div>
+          </div>
+        )
+      }
+      return <HomeLanding navigate={navigate} data={data} />
+    }
+    if (!authed && route !== '/consult' && route !== '/auth') {
+      return (
+        <div className="panel" style={{ textAlign: 'center' }}>
+          <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>로그인이 필요합니다</div>
+          <div className="muted">AI 챗봇상담을 제외한 정보는 로그인 후 이용 가능합니다.</div>
+          <div className="muted" style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.</div>
+          <div className="row" style={{ justifyContent: 'center', marginTop: 16, gap: 8 }}>
+            <button className="btn" onClick={() => navigate('/auth')}>로그인/회원가입</button>
+            <button className="btn secondary" onClick={() => navigate('/consult')}>AI 챗봇상담으로 이동</button>
+          </div>
+        </div>
+      )
+    }
     if (route === '/search') {
       const shortcuts = [
         { label: '마이데이터', icon: '👤', description: '내 금융상품·자산 보기', to: '/mydata' },
@@ -101,9 +160,10 @@ export default function App() {
     if (route === '/transfer') return <TransferPage navigate={navigate} />
     if (route === '/savings') return <SavingsOverview navigate={navigate} data={data} />
     if (route === '/mydata') return <MyDataPage navigate={navigate} />
+    if (route === '/auth') return <AuthPage navigate={navigate} />
     if (route === '/mydata/finance') return <MyDataFinancePage navigate={navigate} data={data} />
     if (route === '/mydata/assets') return <MyDataAssetsPage navigate={navigate} data={data} />
-    if (route === '/mydata/welfare') return <MyDataWelfarePage navigate={navigate} />
+    if (route === '/mydata/welfare') return <MyDataWelfarePage navigate={navigate} data={data} authed={authed} />
     if (route === '/profile') return <ProfileSelectPage navigate={navigate} />
     if (route === '/select/region') return <RegionSelect navigate={navigate} />
     if (route === '/select/job') return <JobSelect navigate={navigate} />
@@ -179,12 +239,15 @@ export default function App() {
     return <div className="muted">페이지를 찾을 수 없습니다. <button className="btn link" onClick={() => navigate('/')}>홈으로</button></div>
   }
 
-  const tabItems: Array<{ label: string, icon: string, target: string | string[], to: string }> = [
+  const tabItems: Array<{ label: string, icon: string, target: string | string[], to: string }> = authed ? [
     { label: '홈', icon: '🏠', target: '/', to: '/' },
     { label: '간편송금', icon: '✅', target: '/transfer', to: '/transfer' },
     { label: '내가족 적금', icon: '⭐', target: '/savings', to: '/savings' },
     { label: '마이데이터', icon: '👤', target: ['/mydata'], to: '/mydata' },
     { label: '전체', icon: '≡', target: '/search', to: '/search' }
+  ] : [
+    { label: 'AI 상담', icon: '🤖', target: '/consult', to: '/consult' },
+    { label: '로그인', icon: '🔐', target: '/auth', to: '/auth' }
   ]
 
   const renderMobileTabBar = () => (
@@ -230,12 +293,33 @@ export default function App() {
             <div className="title" style={{ whiteSpace: 'nowrap' }}>{isNative ? 'WELFAREN' : '웰페린'}</div>
           </div>
           {!isNative && (
-            <nav className="top-nav">
-              <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
-              <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
+            <nav className="top-nav" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {/* Always available */}
               <button className={`nav-btn green ${isActive(['/consult', '/wizard']) ? 'active' : ''}`} onClick={() => navigate('/consult')}>AI 챗봇상담</button>
-              <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
-              <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
+              {/* Protected buttons (require login) */}
+              {authed && (
+                <>
+                  <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
+                  <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
+                  <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
+                  <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
+                </>
+              )}
+              {/* Push login to far right */}
+              <div style={{ marginLeft: 'auto' }} />
+              {authed ? (
+                <>
+                  <span className="muted" style={{ marginRight: 6, fontSize: 12 }}>
+                    {localStorage.getItem('userId') || '사용자'}님
+                  </span>
+                  <button
+                    className={`nav-btn slate`}
+                    onClick={() => { localStorage.removeItem('authToken'); localStorage.removeItem('userId'); window.dispatchEvent(new Event('authed')); navigate('/') }}
+                  >로그아웃</button>
+                </>
+              ) : (
+                <button className={`nav-btn slate ${isActive('/auth') ? 'active' : ''}`} onClick={() => navigate('/auth')}>로그인</button>
+              )}
             </nav>
           )}
         </header>

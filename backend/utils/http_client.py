@@ -2,11 +2,6 @@ import httpx
 import asyncio
 
 async def fetch_json(url: str, params: dict = None, timeout: int = 10):
-    """
-    비동기 JSON 요청 유틸
-    - httpx.AsyncClient 사용
-    - 타임아웃 및 예외 처리 포함
-    """
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             res = await client.get(url, params=params)
@@ -20,9 +15,6 @@ async def fetch_json(url: str, params: dict = None, timeout: int = 10):
         return None
 
 def fetch_sync(url: str, params: dict = None, timeout: int = 10):
-    """
-    동기 버전 (requests 대체용)
-    """
     import requests
     try:
         res = requests.get(url, params=params, timeout=timeout)
@@ -32,5 +24,4 @@ def fetch_sync(url: str, params: dict = None, timeout: int = 10):
         print(f"[ERROR] fetch_sync(): {e}")
         return None
 
-# 예시 사용:
-# data = await fetch_json("https://api.odcloud.kr/api/some-endpoint", {"serviceKey": KEY})
+
