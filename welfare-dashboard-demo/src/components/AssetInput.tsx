@@ -8,6 +8,14 @@ export type SavingsInfo = {
   earlyTerminatePenaltyRate: number // e.g. 0.01 (1% of principal)
 }
 
+export type LoanInfo = {
+  lender: string
+  amount: number
+  annualRate: number
+  remainingMonths: number
+  purpose?: string
+}
+
 export type AssetFormData = {
   monthlyIncome: number
   householdSize: number
@@ -15,6 +23,7 @@ export type AssetFormData = {
   deposits: number
   otherAssets: number
   savings: SavingsInfo
+  loans: LoanInfo[]
 }
 
 export default function AssetInput({ value, onChange, onNext }: {

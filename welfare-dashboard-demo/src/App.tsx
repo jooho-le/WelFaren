@@ -14,30 +14,28 @@ import RegionSelect from './pages/select/RegionSelect'
 import JobSelect from './pages/select/JobSelect'
 import AgeSelect from './pages/select/AgeSelect'
 import PrefSelect from './pages/select/PrefSelect'
-import MyDataWelfarePage from './pages/MyDataWelfarePage'
 import WelfareHub from './pages/WelfareHub'
 import FinanceHub from './pages/FinanceHub'
 import WelfareCategory from './pages/WelfareCategory'
 import SavingsOverview from './pages/SavingsOverview'
-import MyDataFinancePage from './pages/MyDataFinancePage'
-import MyDataAssetsPage from './pages/MyDataAssetsPage'
 import AuthPage from './pages/AuthPage'
 
 type Step = 0 | 1 | 2
 
 const defaultData: AssetFormData = {
-  monthlyIncome: 2800000,
+  monthlyIncome: 2_800_000,
   householdSize: 2,
   realEstate: 120_000_000,
   deposits: 15_000_000,
   otherAssets: 2_000_000,
   savings: {
-    productName: '청년 희망적금',
+    productName: 'Starter Savings',
     principal: 5_000_000,
     annualRate: 0.034,
     monthsRemaining: 8,
     earlyTerminatePenaltyRate: 0.015
-  }
+  },
+  loans: [],
 }
 
 export default function App() {
@@ -50,7 +48,8 @@ export default function App() {
     realEstate: 0,
     deposits: 0,
     otherAssets: 0,
-    savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 }
+    savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 },
+    loans: []
   }
   const [data, setData] = useState<AssetFormData>(() => (localStorage.getItem('authToken') ? emptyData : defaultData))
   const isNative = Capacitor.isNativePlatform?.() ?? false
@@ -69,7 +68,8 @@ export default function App() {
         realEstate: 0,
         deposits: 0,
         otherAssets: 0,
-        savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 }
+        savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 },
+        loans: []
       })
     }
     const onStorage = (e: StorageEvent) => { if (e.key === 'authToken') updateAuth() }
@@ -159,11 +159,53 @@ export default function App() {
     )
     if (route === '/transfer') return <TransferPage navigate={navigate} />
     if (route === '/savings') return <SavingsOverview navigate={navigate} data={data} />
-    if (route === '/mydata') return <MyDataPage navigate={navigate} />
+    if (route === '/mydata') return (
+      <MyDataPage
+        navigate={navigate}
+        data={data}
+        setData={setData}
+        authed={authed}
+        initialTab='assets'
+        showEntry
+      />
+    )
     if (route === '/auth') return <AuthPage navigate={navigate} />
-    if (route === '/mydata/finance') return <MyDataFinancePage navigate={navigate} data={data} />
-    if (route === '/mydata/assets') return <MyDataAssetsPage navigate={navigate} data={data} />
-    if (route === '/mydata/welfare') return <MyDataWelfarePage navigate={navigate} data={data} authed={authed} />
+    if (route === '/mydata/finance') {
+      return (
+        <MyDataPage
+          navigate={navigate}
+          data={data}
+          setData={setData}
+          authed={authed}
+          initialTab='finance'
+          showEntry={false}
+        />
+      )
+    }
+    if (route === '/mydata/assets') {
+      return (
+        <MyDataPage
+          navigate={navigate}
+          data={data}
+          setData={setData}
+          authed={authed}
+          initialTab='assets'
+          showEntry={false}
+        />
+      )
+    }
+    if (route === '/mydata/welfare') {
+      return (
+        <MyDataPage
+          navigate={navigate}
+          data={data}
+          setData={setData}
+          authed={authed}
+          initialTab='welfare'
+          showEntry={false}
+        />
+      )
+    }
     if (route === '/profile') return <ProfileSelectPage navigate={navigate} />
     if (route === '/select/region') return <RegionSelect navigate={navigate} />
     if (route === '/select/job') return <JobSelect navigate={navigate} />

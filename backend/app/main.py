@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import welfare_router, data_router
 from app.api import auth_router
 from app.api import user_router
+from app.api import chat_router
 from app.services.scheduler import start_scheduler
 from dotenv import load_dotenv
 
@@ -23,6 +24,7 @@ app.include_router(welfare_router.router, prefix="/welfare", tags=["Welfare"])
 app.include_router(data_router.router, prefix="/data", tags=["Data"])
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 app.include_router(user_router.router, prefix="/user", tags=["User"])
+app.include_router(chat_router.router, prefix="/chat", tags=["Chat"])
 
 @app.on_event("startup")
 async def startup_event():
