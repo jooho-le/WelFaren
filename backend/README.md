@@ -12,6 +12,9 @@ Endpoints
 - POST `/welfare/recommendations`
   - Body: `{ region_code?, job_category?, age?, preferences: string[], household_size?, recognized_income? }`
   - Returns a scored list of welfare programs sorted by relevance.
+- POST `/finance/recommendations`
+  - Body: `{ monthlyIncome, householdSize, realEstate, deposits, otherAssets, savings, loans? }`
+  - Calls 금융감독원 ‘금융상품 한눈에’ API on-demand and returns 추천 예금/적금/대출 리스트.
 
 Local Mock Data
 
@@ -27,6 +30,8 @@ Environment
 - `FSS_API_KEY`: API key for FSS depositProductsSearch
 - `FSS_API_URL` (optional): override FSS endpoint
 - `FSS_TOP_FIN_GRP_NO` (optional): default `020000` (은행권)
+- `FSS_FINLIFE_API_KEY`: 금융감독원 ‘금융상품 한눈에’ REST API 키 (신규)
+- `FSS_FINLIFE_API_BASE` (optional): 기본값 `https://finlife.fss.or.kr/finlifeapi`
 - `GEMINI_API_KEY`: Google AI Studio key for Gemini 상담
 - `GEMINI_MODEL_NAME` (optional): Gemini model override (default `gemini-2.0-flash-lite-preview`)
 
