@@ -1,3 +1,6 @@
+# ===========================
+# 🐍 Python / Backend
+# ===========================
 # 가상환경
 venv/
 .env
@@ -5,15 +8,74 @@ venv/
 # Python 캐시
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.py[cod]
 
 # IDE 설정
 .vscode/
 .idea/
 
-# OS/시스템 파일
-.DS_Store
-
 # 환경변수 / 비밀키 파일
 *.env
 .env.*
 config.json
+
+# ===========================
+# ⚙️ Node.js / Frontend
+# ===========================
+# Dependencies
+/node_modules
+*/node_modules/
+
+# Build output
+/dist
+/build
+/public/build
+/.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cache
+.cache/
+.eslintcache
+*.tsbuildinfo
+
+# Testing
+/coverage
+/jest-cache/
+/jest-coverage/
+
+# Firebase / Deploy artifacts
+.firebase/
+.firebaserc
+*.zip
+
+# ===========================
+# OS / System / Misc
+# ===========================
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.tmp
+*.local
+*.log
+
+# ===========================
+# IDE / Editor
+# ===========================
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# ===========================
+# Optional lock files
+# ===========================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

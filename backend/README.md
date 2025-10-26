@@ -5,6 +5,9 @@ Endpoints
 - POST `/welfare/diagnose`
   - Body: `{ household_size, monthly_income, total_assets }`
   - Returns recognized income and basic eligibility grade.
+- POST `/chat/reply`
+  - Body: `{ "messages": [{ "role": "user" | "assistant", "content": "<text>" }], "context"?: { ... } }`
+  - Returns Gemini-generated 상담 답변을 포함한 JSON (`{ "reply": "<text>" }`).
 
 - POST `/welfare/recommendations`
   - Body: `{ region_code?, job_category?, age?, preferences: string[], household_size?, recognized_income? }`
@@ -24,6 +27,8 @@ Environment
 - `FSS_API_KEY`: API key for FSS depositProductsSearch
 - `FSS_API_URL` (optional): override FSS endpoint
 - `FSS_TOP_FIN_GRP_NO` (optional): default `020000` (은행권)
+- `GEMINI_API_KEY`: Google AI Studio key for Gemini 상담
+- `GEMINI_MODEL_NAME` (optional): Gemini model override (default `gemini-2.0-flash-lite-preview`)
 
 Using 한국사회보장정보원_중앙부처복지서비스
 
