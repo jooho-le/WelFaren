@@ -59,6 +59,7 @@ def recommend_welfare(
         region_code=region_code,
         job_category=job_category,
         age=age,
+        preferences=preferences or [],
     )
 
     # 스코어 계산
@@ -79,4 +80,3 @@ def recommend_welfare(
     # 점수순 정렬
     scored.sort(key=lambda x: x.get("score", 0), reverse=True)
     return scored
-

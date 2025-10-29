@@ -1,4 +1,5 @@
-import type { AssetFormData } from '../components/AssetInput'
+import React from 'react'
+import type { AssetFormData, LoanInfo } from '../components/AssetInput'
 
 export default function SavingsOverview({
   navigate,
@@ -7,9 +8,9 @@ export default function SavingsOverview({
   navigate: (p: string) => void
   data: AssetFormData
 }) {
-  const authed = !!(typeof window !== 'undefined' && localStorage.getItem('authToken'))
-  const savings = data.savings
-  const loans = data.loans ?? []
+  const authed = !!(typeof window !== 'undefined' && typeof localStorage !== 'undefined' && localStorage.getItem('authToken'))
+  const savings = data?.savings ?? { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 }
+  const loans: LoanInfo[] = Array.isArray((data as any)?.loans) ? ((data as any).loans as LoanInfo[]) : []
   const principal = savings.principal || 0
   const months = Math.max(0, savings.monthsRemaining || 0)
   const maturity = Math.round(principal * (1 + (savings.annualRate || 0) * (months / 12)))

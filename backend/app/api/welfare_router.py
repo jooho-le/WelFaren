@@ -5,6 +5,7 @@ from app.services.welfare_service import WelfareInput, calculate_income_recognit
 from app.services.welfare_recommendation import recommend_welfare
 from app.services.welfare_provider import USE_MOCK as WELFARE_USE_MOCK
 from app.services.welfare_provider import WELFARE_API_BASE, WELFARE_API_LIST_PATH
+from app.services.welfare_provider import provider_status
 
 router = APIRouter()
 
@@ -44,13 +45,15 @@ def get_recommendations(payload: RecommendationRequest):
         household_size=payload.household_size,
         recognized_income=payload.recognized_income,
     )
+    status = provider_status()
     return {
         "count": len(items),
         "items": items,
         "meta": {
-            "used_mock": bool(WELFARE_USE_MOCK),
+            "used_mock": bool(WELFARE_USE_MOCK or status.get("last_error")),
             "api_base": WELFARE_API_BASE,
             "list_path": WELFARE_API_LIST_PATH,
+            "mock_reason": status.get("last_error"),
             "filters": {
                 "region_code": payload.region_code,
                 "job_category": payload.job_category,

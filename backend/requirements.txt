@@ -10,4 +10,5 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
 email-validator
+xmltodict
 google-generativeai
