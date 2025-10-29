@@ -34,6 +34,7 @@ export default function MyDataAssetsPage({
   data: AssetFormData
 }) {
   const authed = !!(typeof window !== 'undefined' && localStorage.getItem('authToken'))
+
   const slices: PortfolioSlice[] = useMemo(() => {
     const safeValue = (key: PortfolioKey) => Math.max(0, data[key] ?? 0)
     return [
@@ -47,16 +48,16 @@ export default function MyDataAssetsPage({
   const householdSize = Math.max(1, data.householdSize || 1)
   const assetPerCapita = totalAsset / householdSize
 
-const liquidityRatio = useMemo(() => {
-  const cashable = (data.deposits ?? 0) + (data.otherAssets ?? 0)
-  return totalAsset > 0 ? Math.min(1, cashable / totalAsset) : 0
-}, [data.deposits, data.otherAssets, totalAsset])
+  const liquidityRatio = useMemo(() => {
+    const cashable = (data.deposits ?? 0) + (data.otherAssets ?? 0)
+    return totalAsset > 0 ? Math.min(1, cashable / totalAsset) : 0
+  }, [data.deposits, data.otherAssets, totalAsset])
 
-const incomeCoverage = useMemo(() => {
-  const monthlyIncome = Math.max(0, data.monthlyIncome ?? 0)
-  const yearlyIncome = monthlyIncome * 12
-  return yearlyIncome > 0 ? totalAsset / yearlyIncome : 0
-}, [data.monthlyIncome, totalAsset])
+  const incomeCoverage = useMemo(() => {
+    const monthlyIncome = Math.max(0, data.monthlyIncome ?? 0)
+    const yearlyIncome = monthlyIncome * 12
+    return yearlyIncome > 0 ? totalAsset / yearlyIncome : 0
+  }, [data.monthlyIncome, totalAsset])
 
   const incomeRecognition = useMemo(() => {
     const earned = (data.monthlyIncome ?? 0) * 0.7
@@ -99,7 +100,7 @@ const incomeCoverage = useMemo(() => {
       <div className="section-title" style={{ fontSize: 32, textAlign: 'center' }}>자산 포트폴리오 현황</div>
       {!authed && (
         <div className="muted" style={{ textAlign: 'center', marginBottom: 10, fontSize: 12 }}>
-          마이데이터 연동 전에는 예시 데이터가 표시됩니다. 상단 입력 영역에서 자산을 직접 수정할 수 있습니다.
+          마이데이터 연동 전에는 예시 데이터가 표시됩니다. 상단 입력에서 자산을 수정해 주세요.
         </div>
       )}
       <div className="muted" style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -215,7 +216,7 @@ const incomeCoverage = useMemo(() => {
             <div className="asset-insight-item">
               <div className="asset-insight-key">부동산 비중</div>
               <div className="asset-insight-val">{realEstateShare}%</div>
-              <div className="asset-insight-desc">전체 자산 중 부동산이 차지하는 비율입니다.</div>
+              <div className="asset-insight-desc">전체 자산에서 부동산이 차지하는 비율입니다.</div>
             </div>
             <div className="asset-insight-item">
               <div className="asset-insight-key">자산 안전도</div>
@@ -229,7 +230,7 @@ const incomeCoverage = useMemo(() => {
       <div className="card" style={{ marginTop: 24 }}>
         <div className="section-title" style={{ fontSize: 18, marginBottom: 12 }}>대출 현황</div>
         {loans.length === 0 ? (
-          <div className="muted">등록된 대출이 없습니다. 상단 입력 영역에서 필요 시 추가하세요.</div>
+          <div className="muted">등록된 대출이 없습니다. 상단 입력 영역에서 추가해 보세요.</div>
         ) : (
           <div className="grid" style={{ gap: 10 }}>
             {loans.map((loan, index) => (
@@ -248,7 +249,7 @@ const incomeCoverage = useMemo(() => {
           </div>
         )}
         <div className="muted" style={{ marginTop: 12, fontSize: 12 }}>
-          대출 정보 수정이 필요하면 상단의 자산 입력 영역으로 이동해 업데이트하세요. 총 대출 잔액: {totalLoanAmount.toLocaleString()}원
+          대출 정보 수정이 필요하면 상단 자산 입력 화면에서 업데이트하세요. 총 대출 잔액: {totalLoanAmount.toLocaleString()}원
         </div>
       </div>
 
