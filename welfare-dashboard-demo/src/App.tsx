@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import logoImg from '@/assets/logo.png'
-import AssetInput, { AssetFormData } from './components/AssetInput'
+import AssetInput, { AssetFormData, LoanInfo, SavingsInfo } from './components/AssetInput'
 import WelfareResults from './components/WelfareResults'
 import DSAEngine from './components/DSAEngine'
 import HomeLanding from './pages/HomeLanding'
@@ -22,6 +22,8 @@ import AuthPage from './pages/AuthPage'
 
 type Step = 0 | 1 | 2
 
+const ASSET_STORAGE_KEY = 'welFaren.assetFormDraft'
+
 const defaultData: AssetFormData = {
   monthlyIncome: 2_800_000,
   householdSize: 2,
@@ -38,20 +40,97 @@ const defaultData: AssetFormData = {
   loans: [],
 }
 
+const emptyData: AssetFormData = {
+  monthlyIncome: 0,
+  householdSize: 1,
+  realEstate: 0,
+  deposits: 0,
+  otherAssets: 0,
+  savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 },
+  loans: []
+}
+
+const toNumber = (value: unknown, fallback = 0) => {
+  const num = typeof value === 'string' ? Number(value) : Number(value ?? 0)
+  return Number.isFinite(num) ? num : fallback
+}
+
+const sanitizeSavings = (raw: unknown): SavingsInfo => {
+  const obj = (raw && typeof raw === 'object') ? raw as Record<string, unknown> : {}
+  const penaltyRate = Math.max(0, toNumber(obj.earlyTerminatePenaltyRate ?? obj.penalty, 0))
+  const savings: SavingsInfo = {
+    productName: typeof obj.productName === 'string' ? obj.productName : '',
+    principal: Math.max(0, toNumber(obj.principal, 0)),
+    annualRate: Math.max(0, toNumber(obj.annualRate, 0)),
+    monthsRemaining: Math.max(0, Math.round(toNumber(obj.monthsRemaining, 0))),
+    earlyTerminatePenaltyRate: penaltyRate,
+    penalty: penaltyRate,
+  }
+  return savings
+}
+
+const sanitizeLoans = (raw: unknown): LoanInfo[] => {
+  if (!Array.isArray(raw)) return []
+  return raw
+    .map((item) => {
+      const loan = item && typeof item === 'object' ? item as Record<string, unknown> : {}
+      const lender = typeof loan.lender === 'string' ? loan.lender : ''
+      const amount = Math.max(0, toNumber(loan.amount, 0))
+      const annualRate = Math.max(0, toNumber(loan.annualRate, 0))
+      const remainingMonths = Math.max(0, Math.round(toNumber(loan.remainingMonths, 0)))
+      const purpose = typeof loan.purpose === 'string' ? loan.purpose : undefined
+      return { lender, amount, annualRate, remainingMonths, purpose }
+    })
+    .filter((loan) => loan.lender || loan.amount > 0 || loan.annualRate > 0)
+}
+
+const loadStoredAssetData = (): AssetFormData | null => {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null
+  const raw = localStorage.getItem(ASSET_STORAGE_KEY)
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    const data: AssetFormData = {
+      monthlyIncome: Math.max(0, toNumber(parsed?.monthlyIncome, 0)),
+      householdSize: Math.max(1, Math.round(toNumber(parsed?.householdSize, 1)) || 1),
+      realEstate: Math.max(0, toNumber(parsed?.realEstate, 0)),
+      deposits: Math.max(0, toNumber(parsed?.deposits, 0)),
+      otherAssets: Math.max(0, toNumber(parsed?.otherAssets, 0)),
+      savings: sanitizeSavings(parsed?.savings),
+      loans: sanitizeLoans(parsed?.loans),
+    }
+    return data
+  } catch {
+    return null
+  }
+}
+
+const persistAssetData = (data: AssetFormData) => {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return
+  try {
+    localStorage.setItem(ASSET_STORAGE_KEY, JSON.stringify(data))
+  } catch {
+    // 저장 실패 시 조용히 무시
+  }
+}
+
 export default function App() {
   const [route, setRoute] = useState<string>(() => (location.hash.slice(1) || '/'))
   const [step, setStep] = useState<Step>(0)
   const [authed, setAuthed] = useState<boolean>(() => !!(typeof localStorage !== 'undefined' && localStorage.getItem('authToken')))
-  const emptyData: AssetFormData = {
-    monthlyIncome: 0,
-    householdSize: 1,
-    realEstate: 0,
-    deposits: 0,
-    otherAssets: 0,
-    savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 },
-    loans: []
+  const [dataState, setDataState] = useState<AssetFormData>(() => {
+    const stored = loadStoredAssetData()
+    if (stored) return stored
+    return typeof localStorage !== 'undefined' && localStorage.getItem('authToken') ? emptyData : defaultData
+  })
+  const setData = (next: AssetFormData | ((prev: AssetFormData) => AssetFormData)) => {
+    setDataState((prev) => {
+      const resolved = typeof next === 'function' ? (next as (p: AssetFormData) => AssetFormData)(prev) : next
+      persistAssetData(resolved)
+      return resolved
+    })
   }
-  const [data, setData] = useState<AssetFormData>(() => (localStorage.getItem('authToken') ? emptyData : defaultData))
+  const data = dataState
   const isNative = Capacitor.isNativePlatform?.() ?? false
   useEffect(() => {
     const onHash = () => setRoute(location.hash.slice(1) || '/')
@@ -62,15 +141,14 @@ export default function App() {
     const updateAuth = () => {
       const has = !!localStorage.getItem('authToken')
       setAuthed(has)
-      if (has) setData({
-        monthlyIncome: 0,
-        householdSize: 1,
-        realEstate: 0,
-        deposits: 0,
-        otherAssets: 0,
-        savings: { productName: '', principal: 0, annualRate: 0, monthsRemaining: 0, earlyTerminatePenaltyRate: 0 },
-        loans: []
-      })
+      const stored = loadStoredAssetData()
+      if (stored) {
+        setData(stored)
+      } else if (has) {
+        setData(emptyData)
+      } else {
+        setData(defaultData)
+      }
     }
     const onStorage = (e: StorageEvent) => { if (e.key === 'authToken') updateAuth() }
     window.addEventListener('storage', onStorage)

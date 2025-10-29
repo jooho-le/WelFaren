@@ -6,6 +6,7 @@ export type SavingsInfo = {
   annualRate: number // e.g. 0.035
   monthsRemaining: number
   earlyTerminatePenaltyRate: number // e.g. 0.01 (1% of principal)
+  penalty?: number
 }
 
 export type LoanInfo = {
