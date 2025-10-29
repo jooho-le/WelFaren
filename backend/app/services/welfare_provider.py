@@ -17,12 +17,19 @@ WELFARE_API_LIST_PATH = os.getenv(
 )
 WELFARE_API_KEY = os.getenv("WELFARE_API_KEY", "")
 
+"""Welfare provider for central government services.
+Adds debug status so the API can tell the frontend why mock was used.
+"""
+
 # If WELFARE_API_MOCK is not set, auto-decide: use real API when key exists
 _env_mock = os.getenv("WELFARE_API_MOCK")
 if _env_mock is None:
     USE_MOCK = not bool(WELFARE_API_KEY)
 else:
     USE_MOCK = _env_mock.lower() in ("1", "true", "yes")
+
+# debug status
+LAST_ERROR: Optional[str] = None
 
 
 def _load_mock_data() -> List[Dict[str, Any]]:
@@ -36,6 +43,7 @@ def fetch_welfare_programs(
     region_code: Optional[str],
     job_category: Optional[str],
     age: Optional[int],
+    preferences: Optional[List[str]] = None,
 ) -> List[Dict[str, Any]]:
     """
     외부 복지 API에서 프로그램 목록을 조회하거나, MOCK 데이터를 반환.
@@ -55,7 +63,12 @@ def fetch_welfare_programs(
       "url": str
     }
     """
-    if USE_MOCK or not (WELFARE_API_BASE and WELFARE_API_KEY):
+    global LAST_ERROR
+    if USE_MOCK:
+        LAST_ERROR = "WELFARE_API_MOCK=true or no key"
+        return _load_mock_data()
+    if not (WELFARE_API_BASE and WELFARE_API_KEY):
+        LAST_ERROR = "Missing API base or key"
         return _load_mock_data()
 
     # 실제 API 연동
@@ -66,17 +79,28 @@ def fetch_welfare_programs(
         "serviceKey": WELFARE_API_KEY,
         "pageNo": 1,
         "numOfRows": 200,
-        "type": "json",  # 다수 공공데이터 API는 기본 XML이므로 JSON 요청 표시
+        # 일부 데이터셋은 resultType 또는 type 파라미터를 사용
+        "resultType": "json",
+        "type": "json",
     }
     # 선택적으로 키워드 필터(직업/지역/연령 키워드를 단순 키워드로 묶음)
+    REGION_NAME = {
+        "11": "서울", "26": "부산", "27": "대구", "28": "인천", "29": "광주", "30": "대전",
+        "31": "울산", "36": "세종", "41": "경기", "51": "강원", "43": "충북", "44": "충남",
+        "45": "전북", "46": "전남", "47": "경북", "48": "경남", "50": "제주",
+    }
     keywords: List[str] = []
     if job_category:
         keywords.append(job_category)
     if region_code:
-        keywords.append(region_code)
+        keywords.append(REGION_NAME.get(region_code, region_code))
     if age is not None:
         # 연령대 키워드는 기관 스펙에 따라 lifeArray 등으로 넣어야 할 수 있음. 우선 키워드로만.
         keywords.append(str(age))
+    # preferences도 키워드에 포함
+    # 주거/의료/교육/생계 등 한글 키워드로 검색 품질을 보강
+    if preferences:
+        keywords.extend(preferences)
     if keywords:
         params["srchKeyWord"] = " ".join(keywords)
 
@@ -84,8 +108,17 @@ def fetch_welfare_programs(
     try:
         res = requests.get(url, params=params, timeout=15)
         res.raise_for_status()
-        raw = res.json()
-    except Exception:
+        try:
+            raw = res.json()
+        except Exception:
+            # JSON 파싱 실패 시 XML로 가정하고 파싱 시도
+            try:
+                import xmltodict  # type: ignore
+                raw = xmltodict.parse(res.text)
+            except Exception:
+                return _load_mock_data()
+    except Exception as e:
+        LAST_ERROR = f"request failed: {e}"
         return _load_mock_data()
 
     # 응답 파싱: 공공데이터포털 통합 포맷(response/body/items) 또는 data/items 등
@@ -119,6 +152,7 @@ def fetch_welfare_programs(
     # 여러 케이스 대응
     try:
         if isinstance(raw, dict):
+            # JSON 형식(response/body/items) 또는 XML 파서 결과(dict) 모두 지원
             if "response" in raw:
                 body = raw.get("response", {}).get("body", {})
                 src_items = body.get("items") or body.get("item") or []
@@ -131,8 +165,30 @@ def fetch_welfare_programs(
             elif "items" in raw:
                 src_items = raw.get("items", [])
                 items = [map_item(r) for r in src_items]
-    except Exception:
+            else:
+                # XML 파싱 결과로 종종 response > body > items > item 구조
+                resp = raw.get("response") or raw.get("Response") or {}
+                body = (resp.get("body") if isinstance(resp, dict) else {}) or {}
+                src_items = body.get("items") or body.get("item") or []
+                if isinstance(src_items, dict):
+                    src_items = [src_items]
+                if src_items:
+                    items = [map_item(r) for r in src_items]
+    except Exception as e:
         # 파싱 실패 시 목데이터로 대체
+        LAST_ERROR = f"parse failed: {e}"
         return _load_mock_data()
 
-    return items or _load_mock_data()
+    if not items:
+        LAST_ERROR = LAST_ERROR or "no items from API"
+        return _load_mock_data()
+    LAST_ERROR = None
+    return items
+
+def provider_status() -> Dict[str, Any]:
+    return {
+        "used_mock": USE_MOCK,
+        "api_base": WELFARE_API_BASE,
+        "list_path": WELFARE_API_LIST_PATH,
+        "last_error": LAST_ERROR,
+    }
