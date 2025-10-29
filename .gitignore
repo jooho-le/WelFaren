@@ -1,8 +1,4 @@
-# ==================================================
-# 🐍 Python / Backend
-# ==================================================
-
-# 가상환경 / 환경파일
+# 가상환경
 venv/
 .env
 *.env
@@ -10,86 +6,16 @@ venv/
 
 # 캐시 및 컴파일 파일
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-
-# 데이터베이스 / 설정파일
-*.db
-*.sqlite*
-config.json
+*.pyc
 
 # IDE 설정
 .vscode/
 .idea/
 
-
-# ==================================================
-# ⚙️ Node.js / Frontend
-# ==================================================
-
-# 의존성 폴더
-node_modules/
-*/node_modules/
-
-# 빌드 결과물
-dist/
-build/
-public/build/
-.vite/
-.cache/
-.eslintcache
-*.tsbuildinfo
-
-# 로그 파일
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# 테스트 / 커버리지
-coverage/
-jest-cache/
-jest-coverage/
-
-# Firebase / 배포 산출물
-.firebase/
-.firebaserc
-*.zip
-
-
-# ==================================================
-# 📱 Android / Capacitor
-# ==================================================
-welfare-dashboard-demo/android/.gradle/
-welfare-dashboard-demo/android/build/
-welfare-dashboard-demo/android/app/build/
-*.keystore
-
-
-# ==================================================
-# 🖥 OS / 시스템 / 기타
-# ==================================================
+# OS/시스템 파일
 .DS_Store
-Thumbs.db
-*.swp
-*.bak
-*.tmp
-*.local
-*.log
 
-
-# ==================================================
-# 💻 IDE / Editor
-# ==================================================
-*.sublime-project
-*.sublime-workspace
-*.code-workspace
-
-
-# ==================================================
-# 🔒 Optional Lock Files (필요 시 해제)
-# ==================================================
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
+# 환경변수 / 비밀키 파일
+*.env
+.env.*
+config.json
