@@ -195,23 +195,8 @@ export default function App() {
 
   // Router: map routes to views
   const renderRoute = () => {
-    if (route === '/') {
-      if (!authed) {
-        return (
-          <div className="panel" style={{ textAlign: 'center' }}>
-            <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>웰파렌</div>
-            <div className="muted">AI 챗봇상담은 로그인 없이 이용 가능합니다.</div>
-            <div className="muted" style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.</div>
-            <div className="row" style={{ justifyContent: 'center', marginTop: 16, gap: 8 }}>
-              <button className="btn" onClick={() => navigate('/consult')}>AI 챗봇상담 시작</button>
-              <button className="btn secondary" onClick={() => navigate('/auth')}>로그인/회원가입</button>
-            </div>
-          </div>
-        )
-      }
-      return <HomeLanding navigate={navigate} data={data} />
-    }
-    if (!authed && route !== '/consult' && route !== '/auth') {
+    if (route === '/') return <HomeLanding navigate={navigate} data={data} />
+    if (!authed && route !== '/' && route !== '/consult' && route !== '/auth') {
       return (
         <div className="panel" style={{ textAlign: 'center' }}>
           <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>로그인이 필요합니다</div>
@@ -371,6 +356,7 @@ export default function App() {
     { label: '마이데이터', icon: <IconData size={18} />, target: ['/mydata'], to: '/mydata' },
     { label: '전체', icon: <IconMenu size={18} />, target: '/search', to: '/search' }
   ] : [
+    { label: '홈', icon: <IconHome size={18} />, target: '/', to: '/' },
     { label: 'AI 상담', icon: <IconChat size={18} />, target: '/consult', to: '/consult' },
     { label: '로그인', icon: <IconLock size={18} />, target: '/auth', to: '/auth' }
   ]
