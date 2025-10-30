@@ -24,7 +24,7 @@ export default function ConsultPage({
         data={data}
         setData={setData}
         step={step}
-        setStep={(s) => { setStep(s); navigate(`/wizard/${s}`) }}
+        setStep={setStep}
         incomeRecognition={incomeRecognition}
         eligibility={eligibility}
         fullscreen
