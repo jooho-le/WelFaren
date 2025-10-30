@@ -7,7 +7,7 @@ const serverUrl = process.env.CAP_SERVER_URL
 
 const config: CapacitorConfig = {
   appId: 'com.welperin.app',
-  appName: '웰페린',
+  appName: '웰파렌',
   webDir: 'dist',
   server: serverUrl
     ? { url: serverUrl, cleartext: true }

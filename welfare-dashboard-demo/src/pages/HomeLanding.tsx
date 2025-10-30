@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core'
 import aibbImg from '@/assets/aibb.png'
 import logoImg from '@/assets/logo.png'
 import type { AssetFormData } from '@/components/AssetInput'
+import { IconBank, IconBell, IconChat, IconChart, IconSearch, IconSpark } from '@/components/icons'
 
 export default function HomeLanding({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
   const isNative = (Capacitor as any)?.getPlatform ? (Capacitor as any).getPlatform() !== 'web' : (Capacitor.isNativePlatform?.() || false)
@@ -41,7 +42,9 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
       <div className="mobile-home">
         <div className="mh-topbar">
           <span className="mh-brand">WELFAREN</span>
-          <button className="icon-btn" onClick={() => navigate('/profile')} aria-label="알림">🔔</button>
+          <button className="icon-btn" onClick={() => navigate('/profile')} aria-label="알림">
+            <IconBell size={18} />
+          </button>
         </div>
 
         <div className="mh-searchbar">
@@ -52,7 +55,9 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
               삐삐<span className="mh-search-accent">한테 물어보기</span>
             </span>
           </button>
-          <button className="icon-btn" aria-label="검색">🔍</button>
+          <button className="icon-btn" aria-label="검색">
+            <IconSearch size={18} />
+          </button>
         </div>
 
         <div className="mh-dstatus">
@@ -116,7 +121,7 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
           <h1 className="hero-title">
             금융-복지의 연결
             <br />
-            웰페린에서 쉽고 간편하게
+            웰파렌에서 쉽고 간편하게
           </h1>
           <div className="store-buttons" aria-label="앱 다운로드 경로">
             <a className="store-btn" href="#" onClick={(e) => e.preventDefault()} aria-label="App Store로 이동 예정"><span className="store-ico"></span>App Store</a>
@@ -127,13 +132,13 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
 
       <section className="home-section">
         <div className="section-inner">
-          <h2 className="section-head">왜 웰페린인가</h2>
+          <h2 className="section-head">왜 웰파렌인가</h2>
           <p className="lead">복지와 금융을 한 곳에서. 필요한 정보만 빠르게 찾아주고, 맞춤 추천으로 더 나은 선택을 돕습니다.</p>
           <div className="feature-grid">
-            <div className="feature"><div className="feature-emoji" aria-hidden>🤖</div><div className="feature-title">AI 상담</div><div className="feature-desc">일상어로 질문하고 즉시 답변을 받아보세요.</div></div>
-            <div className="feature"><div className="feature-emoji" aria-hidden>🏦</div><div className="feature-title">복지·적금 추천</div><div className="feature-desc">상황에 맞는 추천을 깔끔하게.</div></div>
-            <div className="feature"><div className="feature-emoji" aria-hidden>📊</div><div className="feature-title">내 자산 한눈에</div><div className="feature-desc">마이데이터 연동으로 정확하게.</div></div>
-            <div className="feature"><div className="feature-emoji" aria-hidden>⚡</div><div className="feature-title">간편한 시작</div><div className="feature-desc">기본 정보만으로 바로 사용.</div></div>
+            <div className="feature"><div className="feature-icon" aria-hidden><IconChat size={22} /></div><div className="feature-title">AI 상담</div><div className="feature-desc">일상어로 질문하고 즉시 답변을 받아보세요.</div></div>
+            <div className="feature"><div className="feature-icon" aria-hidden><IconBank size={22} /></div><div className="feature-title">복지·적금 추천</div><div className="feature-desc">상황에 맞는 추천을 깔끔하게.</div></div>
+            <div className="feature"><div className="feature-icon" aria-hidden><IconChart size={22} /></div><div className="feature-title">내 자산 한눈에</div><div className="feature-desc">마이데이터 연동으로 정확하게.</div></div>
+            <div className="feature"><div className="feature-icon" aria-hidden><IconSpark size={22} /></div><div className="feature-title">간편한 시작</div><div className="feature-desc">기본 정보만으로 바로 사용.</div></div>
           </div>
         </div>
       </section>
@@ -142,7 +147,7 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
         <div className="section-inner">
           <h2 className="section-head">주요 기능</h2>
           <div className="highlight-grid">
-            <div className="highlight"><div className="h-title">현재 적금 금액</div><div className="h-desc">보유 적금 총액과 만기 예상금액 확인</div><button className="h-link" onClick={() => navigate('/savings')}>바로 보기</button></div>
+            <div className="highlight"><div className="h-title">AI 상담</div><div className="h-desc">필요한 복지·금융 정보를 챗봇으로 빠르게 확인</div><button className="h-link" onClick={() => navigate('/consult')}>바로 가기</button></div>
             <div className="highlight"><div className="h-title">마이데이터 연동</div><div className="h-desc">금융상품·자산 연결로 더 정확한 추천</div><button className="h-link" onClick={() => navigate('/mydata')}>연동 관리</button></div>
             <div className="highlight"><div className="h-title">나의 정보 선택</div><div className="h-desc">지역·직업·연령 등 프로필 선택</div><button className="h-link" onClick={() => navigate('/profile')}>설정하기</button></div>
           </div>
@@ -163,7 +168,7 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
       <section className="home-section cta">
         <div className="section-inner cta-inner">
           <div>
-            <div className="cta-title">지금 웰페린을 시작해 보세요</div>
+            <div className="cta-title">지금 웰파렌을 시작해 보세요</div>
             <div className="cta-desc">복잡한 정보 탐색은 그만. 필요한 것만 쉽게.</div>
           </div>
           <div className="store-buttons">

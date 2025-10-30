@@ -70,7 +70,6 @@ export default function TransferPage({ navigate }: { navigate: (p: string) => vo
 
       <div className="row" style={{ marginTop: 8 }}>
         <button className="btn" disabled={!canSend} onClick={send}>송금하기</button>
-        <button className="btn secondary" onClick={() => navigate('/')}>홈으로</button>
         <button className="btn secondary" onClick={addFav}>즐겨찾기 추가</button>
       </div>
 
