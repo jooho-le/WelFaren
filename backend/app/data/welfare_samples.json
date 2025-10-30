@@ -1,0 +1,42 @@
+[
+  {
+    "id": "HOU-001",
+    "name": "청년 월세 한시 특별지원",
+    "provider": "국토교통부",
+    "region_scope": [],
+    "eligible": {"min_age": 19, "max_age": 34, "jobs": ["학생", "직장인", "구직자"]},
+    "categories": ["주거", "청년"],
+    "summary": "청년층의 주거비 부담 경감을 위한 월세 지원.",
+    "url": "https://www.gov.kr/portal/search?query=%EC%B2%AD%EB%85%84%20%EC%9B%94%EC%84%B8%20%ED%8A%B9%EB%B3%84%EC%A7%80%EC%9B%90"
+  },
+  {
+    "id": "EDU-101",
+    "name": "저소득층 자녀 방과후 돌봄 바우처",
+    "provider": "지자체",
+    "region_scope": ["11", "28", "41"],
+    "eligible": {"min_age": 7, "max_age": 15, "jobs": []},
+    "categories": ["돌봄", "교육"],
+    "summary": "맞벌이 및 저소득 가정 자녀를 위한 방과후 돌봄 바우처 지원.",
+    "url": "https://www.gov.kr/portal/search?query=%EB%B0%A9%EA%B3%BC%ED%9B%84%20%EB%8F%8C%EB%B4%84%20%EB%B0%94%EC%9A%B0%EC%B2%98"
+  },
+  {
+    "id": "MED-050",
+    "name": "중증질환 재난적 의료비 지원",
+    "provider": "보건복지부",
+    "region_scope": [],
+    "eligible": {"min_age": 0, "max_age": 120, "jobs": []},
+    "categories": ["의료", "저소득"],
+    "summary": "중증질환으로 인한 고액 의료비 발생 시 본인부담금 지원.",
+    "url": "https://www.gov.kr/portal/search?query=%EC%9E%AC%EB%82%9C%EC%A0%81%20%EC%9D%98%EB%A3%8C%EB%B9%84%20%EC%A7%80%EC%9B%90"
+  },
+  {
+    "id": "FIN-210",
+    "name": "저소득층 긴급복지 생계지원",
+    "provider": "지자체",
+    "region_scope": ["26", "27", "48"],
+    "eligible": {"min_age": 0, "max_age": 120, "jobs": ["구직자", "무직", "일용직"]},
+    "categories": ["생계", "저소득"],
+    "summary": "위기상황 가구에 대한 단기 생계비 지원.",
+    "url": "https://www.gov.kr/portal/search?query=%EA%B8%B4%EA%B8%89%EB%B3%B5%EC%A7%80%20%EC%A7%80%EC%9B%90%EC%A0%9C%EB%8F%84"
+  }
+]
