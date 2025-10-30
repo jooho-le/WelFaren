@@ -51,6 +51,7 @@ function AssetEntrySection({
   })
   const [loanDraft, setLoanDraft] = useState<LoanDraft>({ ...EMPTY_LOAN })
   const [loanError, setLoanError] = useState<string | null>(null)
+  const [saveMessage, setSaveMessage] = useState<string | null>(null)
 
   useEffect(() => {
     setAssetDraft({
@@ -318,6 +319,20 @@ function AssetEntrySection({
               />
             </label>
           </div>
+
+          <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                setSaveMessage('적금 정보가 저장되었습니다.')
+                setTimeout(() => setSaveMessage(null), 2000)
+              }}
+            >
+              적금 추가
+            </button>
+            {saveMessage && <span className="muted" style={{ fontSize: 12 }}>{saveMessage}</span>}
+          </div>
         </div>
       </div>
 
@@ -444,9 +459,7 @@ export default function MyDataPage({
         마이데이터 정보를 업데이트하고, 금융과 복지를 한 번에 확인하세요.
       </div>
 
-      {showEntry && <AssetEntrySection data={data} setData={setData} />}
-
-      <div className="row" style={{ justifyContent: 'center', gap: 12, marginBottom: 24 }}>
+      <div className="row" style={{ justifyContent: 'center', gap: 12, marginBottom: showEntry ? 16 : 24 }}>
         {TAB_CONFIG.map(({ key, label, tone }) => {
           const active = tab === key
           const baseClass = tone === 'alert' ? 'btn alert' : tone === 'secondary' ? 'btn secondary' : 'btn'
@@ -462,6 +475,8 @@ export default function MyDataPage({
           )
         })}
       </div>
+
+      {showEntry && <AssetEntrySection data={data} setData={setData} />}
 
       {showContent ? (
         content

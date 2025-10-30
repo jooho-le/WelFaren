@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Capacitor } from '@capacitor/core'
 import logoImg from '@/assets/logo.png'
 import AssetInput, { AssetFormData, LoanInfo, SavingsInfo } from './components/AssetInput'
@@ -17,8 +17,16 @@ import PrefSelect from './pages/select/PrefSelect'
 import WelfareHub from './pages/WelfareHub'
 import FinanceHub from './pages/FinanceHub'
 import WelfareCategory from './pages/WelfareCategory'
-import SavingsOverview from './pages/SavingsOverview'
 import AuthPage from './pages/AuthPage'
+import {
+  IconChat,
+  IconCompass,
+  IconData,
+  IconHome,
+  IconLock,
+  IconMenu,
+  IconSend,
+} from './components/icons'
 
 type Step = 0 | 1 | 2
 
@@ -191,7 +199,7 @@ export default function App() {
       if (!authed) {
         return (
           <div className="panel" style={{ textAlign: 'center' }}>
-            <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>웰페린</div>
+            <div className="section-title" style={{ fontSize: 28, marginBottom: 8 }}>웰파렌</div>
             <div className="muted">AI 챗봇상담은 로그인 없이 이용 가능합니다.</div>
             <div className="muted" style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>해당 내용은 예시입니다. 회원가입/로그인 후 본인의 정보를 확인할 수 있습니다.</div>
             <div className="row" style={{ justifyContent: 'center', marginTop: 16, gap: 8 }}>
@@ -218,11 +226,10 @@ export default function App() {
     }
     if (route === '/search') {
       const shortcuts = [
-        { label: '마이데이터', icon: '👤', description: '내 금융상품·자산 보기', to: '/mydata' },
-        { label: 'AI 상담', icon: '🤖', description: '복지·금융 질문 바로하기', to: '/consult' },
-        { label: '간편송금', icon: '💸', description: '필요한 곳으로 빠르게 이체', to: '/transfer' },
-        { label: '현재 적금 금액', icon: '💰', description: '적금 현황과 만기금 확인', to: '/savings' },
-        { label: '나의 정보 선택', icon: '🧭', description: '지역·직업 등 프로필 설정', to: '/profile' }
+        { label: '마이데이터', icon: <IconData size={22} />, description: '내 금융상품·자산 보기', to: '/mydata' },
+        { label: 'AI 상담', icon: <IconChat size={22} />, description: '복지·금융 질문 바로하기', to: '/consult' },
+        { label: '간편송금', icon: <IconSend size={22} />, description: '필요한 곳으로 빠르게 이체', to: '/transfer' },
+        { label: '나의 정보 선택', icon: <IconCompass size={22} />, description: '지역·직업 등 프로필 설정', to: '/profile' }
       ]
       return <SearchPage navigate={navigate} isNative={isNative} shortcuts={shortcuts} />
     }
@@ -236,7 +243,6 @@ export default function App() {
       />
     )
     if (route === '/transfer') return <TransferPage navigate={navigate} />
-    if (route === '/savings') return <SavingsOverview navigate={navigate} data={data} />
     if (route === '/mydata') return (
       <MyDataPage
         navigate={navigate}
@@ -359,15 +365,14 @@ export default function App() {
     return <div className="muted">페이지를 찾을 수 없습니다. <button className="btn link" onClick={() => navigate('/')}>홈으로</button></div>
   }
 
-  const tabItems: Array<{ label: string, icon: string, target: string | string[], to: string }> = authed ? [
-    { label: '홈', icon: '🏠', target: '/', to: '/' },
-    { label: '간편송금', icon: '✅', target: '/transfer', to: '/transfer' },
-    { label: '내가족 적금', icon: '⭐', target: '/savings', to: '/savings' },
-    { label: '마이데이터', icon: '👤', target: ['/mydata'], to: '/mydata' },
-    { label: '전체', icon: '≡', target: '/search', to: '/search' }
+  const tabItems: Array<{ label: string, icon: ReactNode, target: string | string[], to: string }> = authed ? [
+    { label: '홈', icon: <IconHome size={18} />, target: '/', to: '/' },
+    { label: '간편송금', icon: <IconSend size={18} />, target: '/transfer', to: '/transfer' },
+    { label: '마이데이터', icon: <IconData size={18} />, target: ['/mydata'], to: '/mydata' },
+    { label: '전체', icon: <IconMenu size={18} />, target: '/search', to: '/search' }
   ] : [
-    { label: 'AI 상담', icon: '🤖', target: '/consult', to: '/consult' },
-    { label: '로그인', icon: '🔐', target: '/auth', to: '/auth' }
+    { label: 'AI 상담', icon: <IconChat size={18} />, target: '/consult', to: '/consult' },
+    { label: '로그인', icon: <IconLock size={18} />, target: '/auth', to: '/auth' }
   ]
 
   const renderMobileTabBar = () => (
@@ -410,7 +415,7 @@ export default function App() {
                 backgroundRepeat: 'no-repeat'
               }}
             />
-            <div className="title" style={{ whiteSpace: 'nowrap' }}>{isNative ? 'WELFAREN' : '웰페린'}</div>
+            <div className="title" style={{ whiteSpace: 'nowrap' }}>{isNative ? 'WELFAREN' : '웰파렌'}</div>
           </div>
           {!isNative && (
             <nav className="top-nav" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -419,7 +424,6 @@ export default function App() {
               {/* Protected buttons (require login) */}
               {authed && (
                 <>
-                  <button className={`nav-btn slate ${isActive('/savings') ? 'active' : ''}`} onClick={() => navigate('/savings')}>현재적금금액</button>
                   <button className={`nav-btn indigo ${isActive('/transfer') ? 'active' : ''}`} onClick={() => navigate('/transfer')}>간편송금</button>
                   <button className={`nav-btn blue ${isActive(['/mydata', '/mydata/welfare', '/mydata/assets', '/mydata/finance']) ? 'active' : ''}`} onClick={() => navigate('/mydata')}>마이데이터</button>
                   <button className={`nav-btn amber ${isActive('/profile') ? 'active' : ''}`} onClick={() => navigate('/profile')}>나의정보선택</button>
