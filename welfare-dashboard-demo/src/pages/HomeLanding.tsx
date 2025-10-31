@@ -5,23 +5,26 @@ import logoImg from '@/assets/logo.png'
 import type { AssetFormData } from '@/components/AssetInput'
 import { IconBank, IconBell, IconChat, IconChart, IconSearch, IconSpark } from '@/components/icons'
 
-export default function HomeLanding({ navigate, data }: { navigate: (p: string) => void, data: AssetFormData }) {
+export default function HomeLanding({ navigate, data, authed }: { navigate: (p: string) => void, data: AssetFormData, authed: boolean }) {
   const isNative = (Capacitor as any)?.getPlatform ? (Capacitor as any).getPlatform() !== 'web' : (Capacitor.isNativePlatform?.() || false)
   const now = new Date()
   const maturity = useMemo(() => {
+    if (!authed) return null
     const d = new Date()
     d.setMonth(d.getMonth() + Math.max(0, data.savings.monthsRemaining || 0))
     return d
-  }, [data])
-  const dday = Math.max(0, Math.ceil((maturity.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-  const expected = Math.round(data.savings.principal * (1 + data.savings.annualRate * (Math.max(0, data.savings.monthsRemaining) / 12)))
+  }, [authed, data])
+  const dday = maturity ? Math.max(0, Math.ceil((maturity.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))) : null
+  const expected = authed
+    ? Math.round(data.savings.principal * (1 + data.savings.annualRate * (Math.max(0, data.savings.monthsRemaining) / 12)))
+    : null
 
   const fmt = (n: number) => n.toLocaleString()
   const fmtDate = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
   const goalTarget = 100_000_000
-  const averageRate = (data.savings.annualRate * 100).toFixed(1)
-  const maturityLabel = fmtDate(maturity)
-  const goalDateLabel = fmtDate(maturity)
+  const averageRate = authed ? (data.savings.annualRate * 100).toFixed(1) : null
+  const maturityLabel = maturity ? fmtDate(maturity) : null
+  const goalDateLabel = maturity ? fmtDate(maturity) : null
   const consentThen = (next: () => void) => {
     const ok = localStorage.getItem('consent-ok') === '1' || confirm('개인정보 이용에 동의하시겠습니까?')
     if (ok) { localStorage.setItem('consent-ok', '1'); next() }
@@ -34,7 +37,7 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
   const playLotto = () => {
     alert('광고 시청 후 복권 발급 (데모)')
     const ticket = Math.floor(100000 + Math.random() * 900000)
-    alert(`복권 번호: ${ticket} (매주 자동 추첨)`) 
+    alert(`복권 번호: ${ticket} (매주 자동 추첨)`)
   }
 
   if (isNative) {
@@ -60,34 +63,47 @@ export default function HomeLanding({ navigate, data }: { navigate: (p: string) 
           </button>
         </div>
 
-        <div className="mh-dstatus">
-          <div className="mh-dday">D-{dday}</div>
-          <div className="mh-dmeta">
-            <span className="mh-dmeta-date">{maturityLabel}</span>
-            <span className="mh-dmeta-label">만기일</span>
-          </div>
-        </div>
+        {authed ? (
+          <>
+            <div className="mh-dstatus">
+              <div className="mh-dday">{dday !== null ? `D-${dday}` : '-'}</div>
+              <div className="mh-dmeta">
+                <span className="mh-dmeta-date">{maturityLabel}</span>
+                <span className="mh-dmeta-label">만기일</span>
+              </div>
+            </div>
 
-        <div className="mh-info-cards">
-          <div className="mh-info-card">
-            <div className="mh-info-label">현재 총 적금</div>
-            <div className="mh-info-value">{fmt(data.savings.principal)}원</div>
-          </div>
-          <div className="mh-info-card">
-            <div className="mh-info-label">세전</div>
-            <div className="mh-info-value">{fmt(expected)}원</div>
-            <div className="mh-info-sub">평균 이자율 {averageRate}%</div>
-          </div>
-        </div>
+            <div className="mh-info-cards">
+              <div className="mh-info-card">
+                <div className="mh-info-label">현재 총 적금</div>
+                <div className="mh-info-value">{fmt(data.savings.principal)}원</div>
+              </div>
+              <div className="mh-info-card">
+                <div className="mh-info-label">세전</div>
+                <div className="mh-info-value">{expected !== null ? `${fmt(expected)}원` : '-'}</div>
+                <div className="mh-info-sub">평균 이자율 {averageRate}%</div>
+              </div>
+            </div>
 
-        <div className="mh-goal">
-          <div className="mh-goal-label">목표 금액</div>
-          <div className="mh-goal-amount">{fmt(goalTarget)}</div>
-          <div className="mh-goal-meta">
-            <span className="mh-goal-tag">예상 달성일</span>
-            <span className="mh-goal-date">{goalDateLabel}</span>
+            <div className="mh-goal">
+              <div className="mh-goal-label">목표 금액</div>
+              <div className="mh-goal-amount">{fmt(goalTarget)}</div>
+              <div className="mh-goal-meta">
+                <span className="mh-goal-tag">예상 달성일</span>
+                <span className="mh-goal-date">{goalDateLabel}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="panel" style={{ margin: '16px 0', textAlign: 'center' }}>
+            <div className="section-title" style={{ fontSize: 24, marginBottom: 8 }}>로그인이 필요합니다</div>
+            <div className="muted">내 자산 요약은 로그인 후 확인할 수 있습니다.</div>
+            <div className="row" style={{ justifyContent: 'center', marginTop: 16, gap: 8 }}>
+              <button className="btn" onClick={() => navigate('/auth')}>로그인/회원가입</button>
+              <button className="btn secondary" onClick={() => navigate('/consult')}>AI 챗봇상담</button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mh-quick-grid">
           <button className="mh-quick-btn" onClick={() => consentThen(() => navigate('/search'))}>오늘의 세금</button>

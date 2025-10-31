@@ -195,7 +195,7 @@ export default function App() {
 
   // Router: map routes to views
   const renderRoute = () => {
-    if (route === '/') return <HomeLanding navigate={navigate} data={data} />
+    if (route === '/') return <HomeLanding navigate={navigate} data={data} authed={authed} />
     if (!authed && route !== '/' && route !== '/consult' && route !== '/auth') {
       return (
         <div className="panel" style={{ textAlign: 'center' }}>
