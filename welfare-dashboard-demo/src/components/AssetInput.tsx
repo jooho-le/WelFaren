@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 export type SavingsInfo = {
   productName: string
@@ -33,6 +33,7 @@ export default function AssetInput({ value, onChange, onNext }: {
   onNext?: () => void,
 }) {
   const totalAssets = useMemo(() => value.realEstate + value.deposits + value.otherAssets, [value])
+  const [saveMessage, setSaveMessage] = useState<string | null>(null)
 
   const set = <K extends keyof AssetFormData>(key: K, v: AssetFormData[K]) => {
     onChange({ ...value, [key]: v })
@@ -124,6 +125,20 @@ export default function AssetInput({ value, onChange, onNext }: {
             <input className="input" type="number" step="0.1" value={value.savings.earlyTerminatePenaltyRate * 100}
               onChange={(e) => setSv('earlyTerminatePenaltyRate', Number(e.target.value || 0) / 100)} />
           </div>
+        </div>
+
+        <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              setSaveMessage('적금 정보가 저장되었습니다.')
+              setTimeout(() => setSaveMessage(null), 2000)
+            }}
+          >
+            적금 추가
+          </button>
+          {saveMessage && <span className="muted" style={{ fontSize: 12 }}>{saveMessage}</span>}
         </div>
 
         <div className="row" style={{ marginTop: 14 }}>

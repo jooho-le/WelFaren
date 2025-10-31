@@ -32,7 +32,6 @@ export default function ProfileSelectPage({ navigate }: { navigate: (p: string) 
         </div>
         <div className="row" style={{ marginTop: 10 }}>
           <button className="btn secondary" onClick={reset}>초기화</button>
-          <button className="btn" onClick={() => navigate('/')}>홈</button>
         </div>
       </div>
     </div>

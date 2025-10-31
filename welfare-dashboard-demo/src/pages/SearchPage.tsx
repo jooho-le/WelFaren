@@ -1,20 +1,19 @@
-import { type FormEventHandler, useMemo, useState } from 'react'
+import { type FormEventHandler, type ReactNode, useMemo, useState } from 'react'
+import { IconChat, IconCompass, IconData, IconSend } from '@/components/icons'
 
 type Shortcut = {
   label: string
   to: string
-  icon?: string
+  icon?: ReactNode
   description?: string
 }
 
 const fallbackShortcuts: Shortcut[] = [
-  { label: '마이데이터', icon: '👤', description: '내 금융상품·자산 보기', to: '/mydata' },
-  { label: 'AI 상담', icon: '🤖', description: '복지·금융 질문 바로하기', to: '/consult' },
-  { label: '간편송금', icon: '💸', description: '필요한 곳으로 빠르게 이체', to: '/transfer' },
-  { label: '현재 적금 금액', icon: '💰', description: '적금 현황과 만기금 확인', to: '/savings' },
-  { label: '나의 정보 선택', icon: '🧭', description: '지역·직업 등 프로필 설정', to: '/profile' }
+  { label: '마이데이터', icon: <IconData size={22} />, description: '내 금융상품·자산 보기', to: '/mydata' },
+  { label: 'AI 상담', icon: <IconChat size={22} />, description: '복지·금융 질문 바로하기', to: '/consult' },
+  { label: '간편송금', icon: <IconSend size={22} />, description: '필요한 곳으로 빠르게 이체', to: '/transfer' },
+  { label: '나의 정보 선택', icon: <IconCompass size={22} />, description: '지역·직업 등 프로필 설정', to: '/profile' }
 ]
-
 export default function SearchPage({
   navigate,
   isNative = false,
